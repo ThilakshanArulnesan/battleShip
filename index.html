@@ -3,13 +3,40 @@
 <head>
   <meta charset="utf-8">
   <title>Battleship LHL</title>
-  <meta name="description" content="The HTML5 Herald">
+  <meta name="A battleship game">
   <meta name="Thilakshan">
   <link rel="stylesheet" href="css/styles.css">
+  <script src="jquery-3.3.1.js"></script>
+  <script src="scripts/helper.js"></script>
 </head>
 
 <body>
   <!--  <script src="scripts/scripts.js"></script> -->
+  <H1>
+    Battleship!
+  </H1>
+  <div class="gameboard">
+
+    <div class="playerArea">
+      <div class="board" id="playerboard"></div>
+      <div class="tracker" id="playerTracker"></div>
+    </div>
+
+    <div id="controlArea">
+      <button>Restart Game</button>
+      <button onClick="getArr('a2')">Start Game</button>
+
+
+    </div>
+
+    <div class="playerArea">
+      <div class="board" id="opponentboard"></div>
+      <div class="tracker" id="playerTracker"></div>
+    </div>
+    <div class="console"></div>
+
+  </div>
+
 </body>
 
 </html>

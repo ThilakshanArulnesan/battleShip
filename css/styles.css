@@ -1,0 +1,45 @@
+.gameboard {
+  background-color: rgb(123, 124, 128);
+  height : 100%;
+  width : 100%;
+}
+
+.playerArea {
+  background-color: rgb(16, 180, 131);
+  height: 80%;
+  width: 47.5%;
+  float:left;
+}
+
+.board {
+  background-color: rgb(16, 27, 180);
+  height: 80%;
+  width: 100%;
+  float:left;
+}
+
+
+.tracker {
+  background-color: rgb(2, 12, 14);
+  height: 20%;
+  width: 100%;
+  float:left;
+}
+
+.console {
+  background-color: rgb(138, 139, 135);
+  height: 20%;
+  width: 100%;
+  float:left;
+}
+
+h1{
+  text-align: center;
+}
+
+#controlArea {
+  background-color: rgb(171, 196, 60);
+  height: 80%;
+  width: 5%;
+  float:left;
+}
