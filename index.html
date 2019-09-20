@@ -6,8 +6,8 @@
   <meta name="A battleship game">
   <meta name="Thilakshan">
   <link rel="stylesheet" href="css/styles.css">
-  <script src="jquery-3.3.1.js"></script>
-  <script src="scripts/helper.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="scripts/main.js"></script>
 </head>
 
 <body>
@@ -24,8 +24,8 @@
 
     <div id="controlArea">
       <button>Restart Game</button>
-      <button onClick="getArr('a2')">Start Game</button>
 
+      <button onClick="startGame()">Start Game</button>
 
     </div>
 
@@ -33,7 +33,9 @@
       <div class="board" id="opponentboard"></div>
       <div class="tracker" id="playerTracker"></div>
     </div>
-    <div class="console"></div>
+
+
+    <textarea readonly type="text" class="console"> Welcome! </textarea>
 
   </div>
 

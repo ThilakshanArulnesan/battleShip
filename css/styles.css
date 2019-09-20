@@ -4,10 +4,23 @@
   width : 100%;
 }
 
+.tile {
+  box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+  border:solid;
+  float:left;
+  color:white;
+  border-color: black;
+  text-align: center;
+  top: 100%;
+}
+
 .playerArea {
   background-color: rgb(16, 180, 131);
   height: 80%;
   width: 47.5%;
+  text-align: center;
   float:left;
 }
 
@@ -20,17 +33,19 @@
 
 
 .tracker {
-  background-color: rgb(2, 12, 14);
+  background-color: rgb(98, 170, 92);
   height: 20%;
   width: 100%;
   float:left;
 }
 
 .console {
-  background-color: rgb(138, 139, 135);
+  background-color: rgb(14, 17, 4);
   height: 20%;
   width: 100%;
+  color: white;
   float:left;
+  font-size: 2em;
 }
 
 h1{
