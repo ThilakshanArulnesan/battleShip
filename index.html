@@ -10,7 +10,9 @@
   <script src="scripts/main.js"></script>
 </head>
 
-<body>
+<!--- Get rid of start later-->
+
+<body onload="startGame()">
   <!--  <script src="scripts/scripts.js"></script> -->
   <H1>
     Battleship!
@@ -18,7 +20,7 @@
   <div class="gameboard">
 
     <div class="playerArea">
-      <div class="board" id="playerboard"></div>
+      <div class="board" id="playerBoard"></div>
       <div class="tracker" id="playerTracker"></div>
     </div>
 
@@ -30,9 +32,10 @@
     </div>
 
     <div class="playerArea">
-      <div class="board" id="opponentboard"></div>
+      <div class="board" id="opponentBoard"></div>
       <div class="tracker" id="playerTracker"></div>
     </div>
+
 
 
     <textarea readonly type="text" class="console"> Welcome! </textarea>
