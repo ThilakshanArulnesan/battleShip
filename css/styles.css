@@ -20,6 +20,15 @@
   border:solid;
   float:left;
   color:white;
+  background-color:yellow;
+  border-color: black;
+  text-align: center;
+  top: 100%;
+}
+.lockedTile{
+  border:solid;
+  float:left;
+  color:white;
   background-color:red;
   border-color: black;
   text-align: center;

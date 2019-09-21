@@ -5,6 +5,15 @@ function Ship(type, size, orientation, owner) {
   this.type = type;
   this.size = size;
   this.orientation = orientation;
+  this.toggleOrientation = function() {
+    if (this.orientation === "v") {
+      this.orientation = "h";
+    } else {
+      this.orientation = "v";
+    }
+
+
+  }
   this.tiles = [];
   this.isSunk = false;
 

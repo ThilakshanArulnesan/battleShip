@@ -7,9 +7,13 @@ let opponentTiles;
 const GAME_SIZE = 10;
 const TICK_RATE = 500;//1 s before another action can be taken
 
-const playerShips = [];
-const opponentShips = [];
+const NUM_SHIPS = 2;
 
+const playerShips = [];
+let playerShipsPlaced = 0;
+
+const opponentShips = [];
+let opponentShipsPlaced = 0;
 
 const getArr = function(a1) {
   // Takes A1 notation and coverts it to a 2d index
@@ -42,7 +46,7 @@ const startGame = function() {
 
   //Load ship types:
 
-  playerShips.push(new Ship("Carrier", 5, "v", "player"));
+  playerShips.push(new Ship("Carrier", 5, "h", "player"));
   playerShips.push(new Ship("Battleship", 4, "v", "player"));
 
   opponentShips.push(new Ship("Carrier", 5, "v", "opponent"));
@@ -52,22 +56,36 @@ const startGame = function() {
   trackShips(playerShips, opponentShips);
   gameState = "setup";
 
-  log(`Please click on the player board (left) on the space where you'd like to place your carrier (4)...`);
+  log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
 };
 
 
 const playerTilePressed = function(a1) {
   // A tile has been pressed
-  console.log(`click`);
   if (isWaiting) return;
+
 
   isWaiting = true;
   setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
   console.log(`${a1}`);
   if (gameState === "setup") {
-    playerTiles[a1].state = "clicked";
+    if (a1 !== activeCell) {
+      let tiles = getTilesProperty(playerTiles, "state", "selected");
+      setTilesProperty(tiles, "state", "w");
+    } else {
+      let tiles = getTilesProperty(playerTiles, "state", "selected");
+      setTilesProperty(tiles, "state", "w");
+      playerShips[playerShipsPlaced].toggleOrientation();
+    }
 
+    activeCell = a1;
 
+    playerTiles[a1].state = "selected";
+    let tiles = getTiles(playerShips[playerShipsPlaced], a1);
+    setTilesProperty(tiles, "state", "selected");
+    log(`Press okay if you are happy with the position.
+    Select the same tile again if you want to change the orientation.
+    Otherwise select another cell.`);
     displayTiles();
   }
 };
@@ -78,16 +96,45 @@ const displayTiles = function() {
     for (let key in playerTiles) { //Display player info
       let tile = playerTiles[key];
       let a1 = tile.a1();
-      $(`#${a1}P`).removeClass('selectedTile'); //May be useful
+      let myTile = $(`#${a1}P`);
 
-      if (tile.state === "clicked") {
-        $(`#${a1}P`).addClass('selectedTile'); //May be useful
+      myTile.removeClass('selectedTile'); //May be useful
+
+      if (tile.state === "selected") {
+        myTile.addClass('selectedTile'); //May be useful
+      } else if (tile.state === "hiddenShip") {
+        myTile.addClass('lockedTile');
       }
+
+
     }
 
   }
 };
 
+const okayPressed = function() {
+  if (gameState === "setup") {
+    let selectedTiles = getTilesProperty(playerTiles, "state", "selected");
+    console.log(selectedTiles);
+    if (selectedTiles.length > 0) {
+      playerShips[playerShipsPlaced].tiles = selectedTiles;
+      console.log(playerShips[playerShipsPlaced]);
+      setTilesProperty(selectedTiles, "state", "hiddenShip");
+      activeCell = undefined;
+      playerShipsPlaced++;
+      displayTiles();
+
+      if (playerShipsPlaced === NUM_SHIPS) {
+        log("~~~~~~~~~~~~~~~");
+        log("~~~~~~~~~~~~~~~");
+        log("~~~~~~~~~~~~~~~");
+        log("Let's begin!!");
+        gameState = "PLAYING";
+      }
+
+    }
+  }
+};
 
 
 const opponentTilePressed = function(a1) {
@@ -138,8 +185,8 @@ const clearBoard = function() {
 const generateEmptyBoard = function(n, boardName) {
   let p = Math.floor(100 / n) + "%"; //Percent of space to take up
   let tiles = {};
-  for (let i = 0; i < n; i++) {
-    for (let j = 1; j < n + 1; j++) {
+  for (let j = 1; j < n + 1; j++) {
+    for (let i = 0; i < n; i++) {
       let a1Not = getA1([i, j]);
       //Create a tile object for each divider
       // id = a1 notation of the space
