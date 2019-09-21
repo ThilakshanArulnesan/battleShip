@@ -46,11 +46,11 @@ const startGame = function() {
 
   //Load ship types:
 
-  playerShips.push(new Ship("Carrier", 5, "h", "player"));
-  playerShips.push(new Ship("Battleship", 4, "v", "player"));
+  playerShips.push(new Ship("Carrier[5]", 5, "h", "player"));
+  playerShips.push(new Ship("Battleship[4]", 4, "v", "player"));
 
-  opponentShips.push(new Ship("Carrier", 5, "v", "opponent"));
-  opponentShips.push(new Ship("Battleship", 4, "v", "opponent"));
+  opponentShips.push(new Ship("Carrier[5]", 5, "v", "opponent"));
+  opponentShips.push(new Ship("Battleship[4]", 4, "v", "opponent"));
 
   opponentShips[1].isSunk = true;
   gameState = "setup";
@@ -63,45 +63,6 @@ const startGame = function() {
 
 
 
-
-const playerTilePressed = function(a1) {
-  // A tile has been pressed
-  if (isWaiting) return;
-
-
-  isWaiting = true;
-  setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
-  console.log(`${a1}`);
-  if (gameState === "setup") {
-    if (a1 !== activeCell) {
-
-      let tiles = getTilesProperty(playerTiles, "state", "selected");
-      if (tiles.length !== 0) {
-
-        setTilesProperty(tiles, "state", "w");
-      }
-    } else {
-      let tiles = getTilesProperty(playerTiles, "state", "selected");
-      setTilesProperty(tiles, "state", "w");
-      playerShips[playerShipsPlaced].toggleOrientation();
-    }
-
-    activeCell = a1;
-
-    //playerTiles[a1].state = "selected";
-    let tiles = getTiles(playerShips[playerShipsPlaced], a1, "player");
-    if (tiles.length === 0) {
-      displayTiles();
-      return;
-    }
-    console.log(tiles);
-    setTilesProperty(tiles, "state", "selected");
-    log(`Press okay if you are happy with the position.
-    Select the same tile again if you want to change the orientation.
-    Otherwise select another cell.`);
-    displayTiles();
-  }
-};
 
 
 const displayTiles = function() {
@@ -134,6 +95,29 @@ const displayTiles = function() {
       } else if (tile.state === "a") {
         myTile.addClass('activeShipPiece');
       }
+
+      console.log("here");
+      if (tile.hitState === "h") {
+        myTile.text("HIT");
+      } else if (tile.hitState === "m") {
+        myTile.text("MISS");
+      }
+    }
+
+  }
+
+  if (gameState === "playing") {
+
+    for (let key in opponentTiles) {//temporary for testing purposes
+      let tile = opponentTiles[key];
+      let a1 = tile.a1();
+      let myTile = $(`#${a1}O`);
+
+      if (tile.hitState === "h") {
+        myTile.text("HIT").addClass("hit");
+      } else if (tile.hitState === "m") {
+        myTile.text("MISS").addClass("miss");
+      }
     }
 
   }
@@ -141,10 +125,7 @@ const displayTiles = function() {
 
 const okayPressed = function() {
   /*
-
   Button will only be used in the setup phase
-
-
   */
   if (gameState === "setup") {
     let selectedTiles = getTilesProperty(playerTiles, "state", "selected");
@@ -153,20 +134,65 @@ const okayPressed = function() {
       playerShips[playerShipsPlaced].tiles = selectedTiles;
       console.log(playerShips[playerShipsPlaced]);
       setTilesProperty(selectedTiles, "state", "a");
+      setTilesProperty(selectedTiles, "ship", playerShips[playerShipsPlaced]);
       activeCell = undefined;
       playerShipsPlaced++;
       displayTiles();
 
       if (playerShipsPlaced === NUM_SHIPS) {
-        log("~~~~~~~~~~~~~~~");
-        log("~~~~~~~~~~~~~~~");
-        log("~~~~~~~~~~~~~~~");
+        log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         log("Let's begin!!");
+
+        //Randomize who goes first
+        log("You go first! Please pick a location");
+
         gameState = "playing";
         $("#okButton").hide();
 
       }
     }
+  }
+};
+
+
+const playerTilePressed = function(a1) {
+  // A tile has been pressed
+  if (isWaiting) return;
+
+
+  isWaiting = true;
+  setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
+  if (gameState === "setup") {
+    console.log(`${a1}`);
+    if (a1 !== activeCell) {
+
+      let tiles = getTilesProperty(playerTiles, "state", "selected");
+      if (tiles.length !== 0) {
+
+        setTilesProperty(tiles, "state", "w");
+      }
+    } else {
+      let tiles = getTilesProperty(playerTiles, "state", "selected");
+      setTilesProperty(tiles, "state", "w");
+      playerShips[playerShipsPlaced].toggleOrientation();
+    }
+
+    activeCell = a1;
+
+    //playerTiles[a1].state = "selected";
+    let tiles = getTiles(playerShips[playerShipsPlaced], a1, "player");
+    if (tiles.length === 0) {
+      displayTiles();
+      return;
+    }
+    console.log(tiles);
+    setTilesProperty(tiles, "state", "selected");
+    log(`Press okay if you are happy with the position.
+    Select the same tile again if you want to change the orientation.
+    Otherwise select another cell.`);
+    displayTiles();
   }
 };
 
@@ -177,6 +203,37 @@ const opponentTilePressed = function(a1) {
   isWaiting = true;
   setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
 
+  if (gameState === "playing") {
+    //Player turn:
+    activeCell = a1;
+    console.log(a1);
+
+    //Check if the tile contains an opponent ship
+    let chosenTile = opponentTiles[a1];
+    console.log(chosenTile);
+    if (chosenTile.guessed) {
+      log(`Already guessed this tile, try again`);
+      displayTiles();
+      return;
+    }
+    chosenTile.guessed = true;
+    if (chosenTile.state === "a") {
+      log(`Player shoots at ${a1}: HIT`);
+      chosenTile.state = 'd'; //Mark it as destroyed
+      chosenTile.hitState = 'h';
+    } else {
+      log(`Player shoots at ${a1}: MISS`);
+      chosenTile.hitState = 'm';
+    }
+
+    //Display hit or miss on the tile (tag it???)
+
+    //Check if that ship is sunk
+
+    //Check if all opponent ships are sunk (Gameover state)
+
+    displayTiles();
+  }
 };
 
 const trackShips = function(playerShips, opponentShips) {

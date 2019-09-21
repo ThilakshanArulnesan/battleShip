@@ -89,3 +89,10 @@ h1{
   float:left;
 }
 
+.hit{
+  color:red;
+}
+
+.miss{
+  color:yellow;
+}

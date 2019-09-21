@@ -36,6 +36,8 @@ const placeOpponentShip = function() {
       opponentShips[opponentShipsPlaced].tiles = selectedTiles;
       console.log(opponentShips[opponentShipsPlaced]);
       setTilesProperty(selectedTiles, "state", "a");
+      setTilesProperty(selectedTiles, "ship", opponentShips[opponentShipsPlaced]);
+
       activeCell = undefined;
       opponentShipsPlaced++;
       displayTiles();
