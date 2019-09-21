@@ -25,11 +25,11 @@
   text-align: center;
   top: 100%;
 }
-.lockedTile{
+.activeShipPiece{
   border:solid;
   float:left;
   color:white;
-  background-color:red;
+  background-color:green;
   border-color: black;
   text-align: center;
   top: 100%;

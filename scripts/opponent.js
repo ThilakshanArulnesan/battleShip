@@ -7,9 +7,9 @@ const placeOpponentShip = function() {
   POTENTIAL ISSUE: Could construct a scenario where its impossible to place all ships
   and AI is stuck in infinite loop. Add an exit case later if needed?
   */
-  let breakCond = 0;
+  let breakCond = 0; //Just here in case it loops for too long trying to place pieces
 
-  while (breakCond < 10 && opponentShipsPlaced < NUM_SHIPS) {
+  while (breakCond < 1000 && opponentShipsPlaced < NUM_SHIPS) {
 
     let x = Math.floor(Math.random() * GAME_SIZE); //0-9
     let y = Math.floor(Math.random() * GAME_SIZE) + 1;//1-10
@@ -35,7 +35,7 @@ const placeOpponentShip = function() {
     if (selectedTiles.length > 0) {
       opponentShips[opponentShipsPlaced].tiles = selectedTiles;
       console.log(opponentShips[opponentShipsPlaced]);
-      setTilesProperty(selectedTiles, "state", "hiddenShip");
+      setTilesProperty(selectedTiles, "state", "a");
       activeCell = undefined;
       opponentShipsPlaced++;
       displayTiles();
@@ -47,6 +47,12 @@ const placeOpponentShip = function() {
     }
     breakCond++;
   }
+
+  if (breakCond === 1000) {//Prevents game from continuing if the oppponent cannot place pieces
+    log("ERROR, COULD NOT PLACE OPPONENT PIECES. PLEASE TRY AGAIN");
+    gameState = "ERROR";
+  }
+
   displayTiles();
   // }
 }

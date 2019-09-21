@@ -115,8 +115,8 @@ const displayTiles = function() {
 
       if (tile.state === "selected") {
         myTile.addClass('selectedTile');
-      } else if (tile.state === "hiddenShip") {
-        myTile.addClass('lockedTile');
+      } else if (tile.state === "a") {
+        myTile.addClass('activeShipPiece');
       }
 
 
@@ -131,8 +131,8 @@ const displayTiles = function() {
 
       if (tile.state === "selected") {
         myTile.addClass('selectedTile');
-      } else if (tile.state === "hiddenShip") {
-        myTile.addClass('lockedTile');
+      } else if (tile.state === "a") {
+        myTile.addClass('activeShipPiece');
       }
     }
 
@@ -140,13 +140,19 @@ const displayTiles = function() {
 };
 
 const okayPressed = function() {
+  /*
+
+  Button will only be used in the setup phase
+
+
+  */
   if (gameState === "setup") {
     let selectedTiles = getTilesProperty(playerTiles, "state", "selected");
     console.log(selectedTiles);
     if (selectedTiles.length > 0) {
       playerShips[playerShipsPlaced].tiles = selectedTiles;
       console.log(playerShips[playerShipsPlaced]);
-      setTilesProperty(selectedTiles, "state", "hiddenShip");
+      setTilesProperty(selectedTiles, "state", "a");
       activeCell = undefined;
       playerShipsPlaced++;
       displayTiles();
@@ -156,9 +162,10 @@ const okayPressed = function() {
         log("~~~~~~~~~~~~~~~");
         log("~~~~~~~~~~~~~~~");
         log("Let's begin!!");
-        gameState = "PLAYING";
-      }
+        gameState = "playing";
+        $("#okButton").hide();
 
+      }
     }
   }
 };
@@ -213,6 +220,8 @@ const clearBoard = function() {
   setTilesProperty(opponentTiles, "state", "w"); //reset player tiles
   $(`.board`).empty();
   $(`ul`).empty();
+  $("#okButton").show();
+
 
   //Logically empty
   opponentShips = [];
