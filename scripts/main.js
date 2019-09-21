@@ -9,10 +9,10 @@ const TICK_RATE = 500;//1 s before another action can be taken
 
 const NUM_SHIPS = 2;
 
-const playerShips = [];
+let playerShips = [];
 let playerShipsPlaced = 0;
 
-const opponentShips = [];
+let opponentShips = [];
 let opponentShipsPlaced = 0;
 
 const getArr = function(a1) {
@@ -70,8 +70,12 @@ const playerTilePressed = function(a1) {
   console.log(`${a1}`);
   if (gameState === "setup") {
     if (a1 !== activeCell) {
+
       let tiles = getTilesProperty(playerTiles, "state", "selected");
-      setTilesProperty(tiles, "state", "w");
+      if (tiles.length !== 0) {
+
+        setTilesProperty(tiles, "state", "w");
+      }
     } else {
       let tiles = getTilesProperty(playerTiles, "state", "selected");
       setTilesProperty(tiles, "state", "w");
@@ -80,8 +84,13 @@ const playerTilePressed = function(a1) {
 
     activeCell = a1;
 
-    playerTiles[a1].state = "selected";
+    //playerTiles[a1].state = "selected";
     let tiles = getTiles(playerShips[playerShipsPlaced], a1);
+    if (tiles.length === 0) {
+      displayTiles();
+      return;
+    }
+    console.log(tiles);
     setTilesProperty(tiles, "state", "selected");
     log(`Press okay if you are happy with the position.
     Select the same tile again if you want to change the orientation.
@@ -98,10 +107,10 @@ const displayTiles = function() {
       let a1 = tile.a1();
       let myTile = $(`#${a1}P`);
 
-      myTile.removeClass('selectedTile'); //May be useful
+      myTile.removeClass('selectedTile');
 
       if (tile.state === "selected") {
-        myTile.addClass('selectedTile'); //May be useful
+        myTile.addClass('selectedTile');
       } else if (tile.state === "hiddenShip") {
         myTile.addClass('lockedTile');
       }
@@ -180,6 +189,20 @@ const clearLog = function() {
 }
 const clearBoard = function() {
   $('.tile').remove();
+
+  //Visual empty
+  setTilesProperty(playerTiles, "state", "w"); //reset player tiles
+  setTilesProperty(opponentTiles, "state", "w"); //reset player tiles
+  $(`.board`).empty();
+  $(`ul`).empty();
+
+  //Logically empty
+  opponentShips = [];
+  playerShips = [];
+  playerShipsPlaced = 0;
+  opponentShipsPlaced = 0;
+
+  displayTiles();
 };
 
 const generateEmptyBoard = function(n, boardName) {
