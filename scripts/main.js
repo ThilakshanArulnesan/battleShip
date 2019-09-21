@@ -16,7 +16,11 @@ const getA1 = function(arr) {
 
 const startGame = function() {
   const GAME_SIZE = 10;
+
+  //Resets the board:
   clearBoard();
+  clearLog();
+  log("welcome");
 
   //Displays tiles and creates tile objects
   //Could look into seperating this functionality out
@@ -30,27 +34,50 @@ const startGame = function() {
   const opponentShips = [];
   opponentShips.push(new Ship("Carrier", 5, "v", "opponent"));
   opponentShips.push(new Ship("Battleship", 4, "v", "opponent"));
-
-
+  opponentShips[1].isSunk = true;
+  trackShips(playerShips, opponentShips);
   // Shows active ships so far:
-  $(`#playerTracker`).append(`<ul></ul>`);
-  for (let ship of playerShips) {
-    //tmpText += "<ul>" + ship.type;
-    $(`#playerTracker ul`).append(`<li>${ship.type}</li>`);
-  }
-
-  $(`#opponentTracker`).append(`<ul></ul>`);
-  for (let ship of opponentShips) {
-    console.log(ship);
-    $(`#opponentTracker ul`).append(`<li>${ship.type}</li>`);
-  }
-
 
 };
 
+const trackShips = function(playerShips, opponentShips) {
+  //Prints out th the tracker area the active ships
+
+  for (let ship of playerShips) {
+    //tmpText += "<ul>" + ship.type;
+    if (ship.isSunk) {
+      $(`#playerTracker ul`).append(`<li><strike>${ship.type}<strike></li>`);
+    } else {
+      $(`#playerTracker ul`).append(`<li>${ship.type}</li>`);
+    }
+  }
+
+  for (let ship of opponentShips) {
+    if (ship.isSunk) {
+      $(`#opponentTracker ul`).append(`<li><strike>${ship.type}<strike></li>`);
+    } else {
+      $(`#opponentTracker ul`).append(`<li>${ship.type}</li>`);
+    }
+  }
+
+};
+
+const log = function(msg) {
+  //Given a string, logs a message to the logger area
+  let myConsole = $('.console');
+  myConsole.append(msg + "\n");
+  myConsole.scrollTop(myConsole[0].scrollHeight);
+  // $(`.console`).scrollTop;
+
+}
+const clearLog = function() {
+
+  $(`.console`).text("");
+
+}
 const clearBoard = function() {
   $('.tile').remove();
-}
+};
 
 const generateEmptyBoard = function(n, boardName) {
   let p = Math.floor(100 / n) + "%"; //Percent of space to take up
@@ -76,6 +103,7 @@ function Ship(type, size, orientation, owner) {
   this.size = size;
   this.orientation = orientation;
   this.tiles = []
+  this.isSunk = false;
 
   //A tile has a location
   this.setTiles = function(startTile) {
