@@ -13,21 +13,38 @@ const getA1 = function(arr) {
   return letToNum[arr[0]] + arr[1];
 };
 
-console.log(getA1([0, 10]));
 
 const startGame = function() {
   const GAME_SIZE = 10;
   clearBoard();
-  generateEmptyBoard(GAME_SIZE, "playerBoard");
-  generateEmptyBoard(GAME_SIZE, "opponentBoard");
 
+  //Displays tiles and creates tile objects
+  //Could look into seperating this functionality out
+  let playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
+  let opponentTiles = generateEmptyBoard(GAME_SIZE, "opponentBoard");
+
+  //Load ship types:
   const playerShips = [];
-  playerShips.push(Ship("Carrier", 5, "v"));
-  playerShips.push(Ship("Battleship", 4, "v"));
-
+  playerShips.push(new Ship("Carrier", 5, "v", "player"));
+  playerShips.push(new Ship("Battleship", 4, "v", "player"));
   const opponentShips = [];
-  opponentShips.push(Ship("Carrier", 5, "v"));
-  opponentShips.push(Ship("Battleship", 4, "v"));
+  opponentShips.push(new Ship("Carrier", 5, "v", "opponent"));
+  opponentShips.push(new Ship("Battleship", 4, "v", "opponent"));
+
+
+  // Shows active ships so far:
+  $(`#playerTracker`).append(`<ul></ul>`);
+  for (let ship of playerShips) {
+    //tmpText += "<ul>" + ship.type;
+    $(`#playerTracker ul`).append(`<li>${ship.type}</li>`);
+  }
+
+  $(`#opponentTracker`).append(`<ul></ul>`);
+  for (let ship of opponentShips) {
+    console.log(ship);
+    $(`#opponentTracker ul`).append(`<li>${ship.type}</li>`);
+  }
+
 
 };
 
@@ -39,17 +56,16 @@ const generateEmptyBoard = function(n, boardName) {
   let p = Math.floor(100 / n) + "%"; //Percent of space to take up
   let tiles = [];
   for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
+    for (let j = 1; j < n + 1; j++) {
       let a1Not = getA1([i, j]);
       //Create a tile object for each divider
       // id = a1 notation of the space
       // id also contains whether player or opponent
-      tiles.push(Tile(i, j, boardName));
+      tiles.push(Tile(i, j, boardName)); //Creates tile objects
       $(`.board#${boardName}`).append(`<div class="tile" id=${a1Not}
-      style="height:10%;width:10%">${a1Not}</div>`);
+      style="height:${p};width:${p}">${a1Not}</div>`);
     }
   }
-
   return tiles;
 };
 
