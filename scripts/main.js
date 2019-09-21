@@ -56,7 +56,7 @@ const startGame = function() {
   gameState = "setup";
 
   placeOpponentShip();
-  trackShips(playerShips, opponentShips);
+  trackShips();
 
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
 };
@@ -225,6 +225,7 @@ const opponentTilePressed = function(a1) {
       chosenTile.hitState = 'h';
       setShipState(chosenTile.ship)
       if (chosenTile.ship.isSunk) {
+        trackShips(playerShips, opponentShips);
         log(`Opponent: "You sunk my battleship!"`);
       }
     } else {
@@ -243,8 +244,10 @@ const opponentTilePressed = function(a1) {
   }
 };
 
-const trackShips = function(playerShips, opponentShips) {
+const trackShips = function() {
   //Prints out th the tracker area the active ships
+  // $(`#playerTracker ul`).empty();
+  $(`ul`).empty();
 
   for (let ship of playerShips) {
     //tmpText += "<ul>" + ship.type;
