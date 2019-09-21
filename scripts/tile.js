@@ -21,18 +21,18 @@ const getTiles = function(ship, startTile) {
   /* Check if there is ship can be placed in the
    given orientation, o/w flip it and try. If both don't work send error*/
 
-  if ((!checkShipFitVertical(y, size)) && (!checkShipFitHorizontal(x, size))) {
+  if ((!checkShipFitVertical(x, y, size)) && (!checkShipFitHorizontal(x, y, size))) {
     log(`Cannot place the ship in cell ${startTile} try another locaiton`);
     return [];
   }
   console.log('here')
 
-  if (!checkShipFitVertical(y, size)) {
+  if (!checkShipFitVertical(x, y, size)) {
     ship.orientation = "h";
   }
   console.log('here')
 
-  if (!checkShipFitHorizontal(x, size)) {
+  if (!checkShipFitHorizontal(x, y, size)) {
     ship.orientation = "v";
   }
   let orientation = ship.orientation;
@@ -51,12 +51,35 @@ const getTiles = function(ship, startTile) {
   return tiles;
 };
 
-const checkShipFitHorizontal = function(x, size) {
-  return x + size <= GAME_SIZE;
+const checkShipFitHorizontal = function(x, y, size) {
+  boardFit = x + size <= GAME_SIZE;
+  if (!boardFit) return false; //Doesn't fit on board, no need to check anything else
+
+  //Check if all tiles are filled with water:
+  for (let i = x; i < x + size; i++) {
+    if (playerTiles[getA1([i, y])].state !== "w") {
+      //Must be a water tile
+      return false;
+    }
+  }
+
+
+  return true;
+
 };
 
-const checkShipFitVertical = function(y, size) {
-  return y + size <= GAME_SIZE + 1;
+const checkShipFitVertical = function(x, y, size) {
+  boardFit = y + size <= GAME_SIZE + 1;
+  if (!boardFit) return false; //Doesn't fit on board, no need to check anything else
+
+  for (let i = y; i < y + size; i++) {
+    if (playerTiles[getA1([x, i])].state !== "w") {
+      //Must be a water tile
+      return false;
+    }
+  }
+  return true;
+
 };
 
 
