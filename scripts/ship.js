@@ -17,20 +17,31 @@ function Ship(type, size, orientation, owner) {
   this.tiles = [];
   this.isSunk = false;
 
-  //A tile has a location
-  this.setTiles = function(startTile) {
-    //This function should set all the tile locations
-    // A ship will have an array of tiles
-    /*  {
-    x: undefined,
-      y: undefined,
-        status: "invis"
-  };*/
-  };
-
-  this.isHit = function(tile) {
-    //Checks if the tile chosen contains a battleship
-    // If it does show it!
-  };
 
 };
+
+const setShipState = function(ship) {
+  //Checks whether a ship has sunk
+  let isSunk = true;
+  for (let tile of ship.tiles) {
+    if (tile.state !== "d") {
+      isSunk = false;
+    }
+  }
+
+  if (isSunk) {
+    ship.isSunk = true;
+  }
+
+  return isSunk;
+};
+
+const allShipsSunk = function(ships) {
+  console.log(ships);
+  for (let ship of ships) {
+    if (!ship.isSunk)//if any ship left, the game isn't over
+      return false;
+  }
+
+  return true;
+}

@@ -52,7 +52,7 @@ const startGame = function() {
   opponentShips.push(new Ship("Carrier[5]", 5, "v", "opponent"));
   opponentShips.push(new Ship("Battleship[4]", 4, "v", "opponent"));
 
-  opponentShips[1].isSunk = true;
+  //opponentShips[1].isSunk = true;
   gameState = "setup";
 
   placeOpponentShip();
@@ -216,23 +216,30 @@ const opponentTilePressed = function(a1) {
       displayTiles();
       return;
     }
+
     chosenTile.guessed = true;
+
     if (chosenTile.state === "a") {
       log(`Player shoots at ${a1}: HIT`);
       chosenTile.state = 'd'; //Mark it as destroyed
       chosenTile.hitState = 'h';
+      setShipState(chosenTile.ship)
+      if (chosenTile.ship.isSunk) {
+        log(`Opponent: "You sunk my battleship!"`);
+      }
     } else {
       log(`Player shoots at ${a1}: MISS`);
       chosenTile.hitState = 'm';
     }
 
-    //Display hit or miss on the tile (tag it???)
-
-    //Check if that ship is sunk
+    displayTiles();
 
     //Check if all opponent ships are sunk (Gameover state)
+    if (allShipsSunk(opponentShips)) {
+      log(`Player has won! CONGRATULATIONS`);
+      gameState = "gameover";
+    }
 
-    displayTiles();
   }
 };
 
