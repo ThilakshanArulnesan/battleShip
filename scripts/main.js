@@ -1,3 +1,5 @@
+let isWaiting = false;
+let gameState = "Not Started";
 
 const getArr = function(a1) {
   // Takes A1 notation and coverts it to a 2d index
@@ -13,15 +15,18 @@ const getA1 = function(arr) {
   return letToNum[arr[0]] + arr[1];
 };
 
-
 const startGame = function() {
   const GAME_SIZE = 10;
-
+  let activeCell;
   //Resets the board:
   clearBoard();
   clearLog();
-  log("welcome");
 
+  gameState = "started";
+
+  $(`#startRestart`).text("Restart");
+
+  log("Welcome to battleship!");
   //Displays tiles and creates tile objects
   //Could look into seperating this functionality out
   let playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
@@ -36,9 +41,20 @@ const startGame = function() {
   opponentShips.push(new Ship("Battleship", 4, "v", "opponent"));
   opponentShips[1].isSunk = true;
   trackShips(playerShips, opponentShips);
-  // Shows active ships so far:
+  gameState = "setup";
 
+  log(`Please click on the player board (left) on the space where you'd like to place your carrier...`);
 };
+
+
+const tilePressed = function(a1) {
+  // A tile has been pressed
+  if (isWaiting) return;
+  isWaiting = true;
+
+  setTimeout(() => isWaiting = false, 2000);//Will block tile from being pressed again immediately
+
+}
 
 const trackShips = function(playerShips, opponentShips) {
   //Prints out th the tracker area the active ships
@@ -71,9 +87,7 @@ const log = function(msg) {
 
 }
 const clearLog = function() {
-
   $(`.console`).text("");
-
 }
 const clearBoard = function() {
   $('.tile').remove();
@@ -91,6 +105,10 @@ const generateEmptyBoard = function(n, boardName) {
       tiles.push(Tile(i, j, boardName)); //Creates tile objects
       $(`.board#${boardName}`).append(`<div class="tile" id=${a1Not}
       style="height:${p};width:${p}">${a1Not}</div>`);
+      $(`.tile#${a1Not}`).bind("click",
+        () => {
+          tilePressed(a1Not);
+        });
     }
   }
   return tiles;
@@ -130,7 +148,6 @@ function Tile(x, y, boardName) {
   this.a1 = getA1(x, y); //Not sure if I'll really need this, shortcut
   this.state = "w"; //w = water, a = active ship, d = destroyed ship
   this.boardName = boardName;//Says which player we're dealing with
-
 }
 
 

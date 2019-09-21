@@ -38,6 +38,16 @@
   width: 100%;
   float:left;
 }
+button {
+  height:5%;
+  width:100%;
+  position: relative;
+}
+#startRestart{
+  position: relative;
+  top:90%;
+
+}
 
 .console {
   background-color: rgb(14, 17, 4);
@@ -45,7 +55,7 @@
   width: 100%;
   color: white;
   float:left;
-  font-size: 2em;
+  font-size: 20px;
 }
 
 h1{
