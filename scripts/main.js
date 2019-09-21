@@ -1,6 +1,7 @@
 let isWaiting = false;
 let gameState = "Not Started";
-
+let activeCell;
+const TICK_RATE = 500;//1 s before another action can be taken
 const getArr = function(a1) {
   // Takes A1 notation and coverts it to a 2d index
   //Returns an array i,j indicating the index.
@@ -17,7 +18,6 @@ const getA1 = function(arr) {
 
 const startGame = function() {
   const GAME_SIZE = 10;
-  let activeCell;
   //Resets the board:
   clearBoard();
   clearLog();
@@ -47,14 +47,30 @@ const startGame = function() {
 };
 
 
-const tilePressed = function(a1) {
+const playerTilePressed = function(a1) {
   // A tile has been pressed
+  console.log(`click`);
   if (isWaiting) return;
+
   isWaiting = true;
+  setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
+  console.log(`${a1}P`);
 
-  setTimeout(() => isWaiting = false, 2000);//Will block tile from being pressed again immediately
+  $(`#${a1}P`).addClass('selectedTile');
 
-}
+
+
+};
+
+
+
+const opponentTilePressed = function(a1) {
+  if (isWaiting) return;
+
+  isWaiting = true;
+  setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
+
+};
 
 const trackShips = function(playerShips, opponentShips) {
   //Prints out th the tracker area the active ships
@@ -102,13 +118,25 @@ const generateEmptyBoard = function(n, boardName) {
       //Create a tile object for each divider
       // id = a1 notation of the space
       // id also contains whether player or opponent
-      tiles.push(Tile(i, j, boardName)); //Creates tile objects
-      $(`.board#${boardName}`).append(`<div class="tile" id=${a1Not}
+      if (boardName === "playerBoard") {
+        tiles.push(Tile(i, j, boardName)); //Creates tile objects
+        $(`.board#${boardName}`).append(`<div class="defaultTile" id="${a1Not}P"
       style="height:${p};width:${p}">${a1Not}</div>`);
-      $(`.tile#${a1Not}`).bind("click",
-        () => {
-          tilePressed(a1Not);
-        });
+        $(`.defaultTile#${a1Not}P`).bind("click",
+          () => {
+            playerTilePressed(a1Not);
+          });
+      } else {
+        tiles.push(Tile(i, j, boardName)); //Creates tile objects
+        $(`.board#${boardName}`).append(`<div class="defaultTile" id="${a1Not}O"
+      style="height:${p};width:${p}">${a1Not}</div>`);
+        $(`.defaultTile#${a1Not}O`).bind("click",
+          () => {
+            opponentTilePressed(a1Not);
+          });
+      }
+
+
     }
   }
   return tiles;
@@ -148,8 +176,8 @@ function Tile(x, y, boardName) {
   this.a1 = getA1(x, y); //Not sure if I'll really need this, shortcut
   this.state = "w"; //w = water, a = active ship, d = destroyed ship
   this.boardName = boardName;//Says which player we're dealing with
-}
 
+};
 
 
 

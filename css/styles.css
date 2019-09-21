@@ -4,13 +4,23 @@
   width : 100%;
 }
 
-.tile {
+.defaultTile {
   box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
   border:solid;
   float:left;
   color:white;
+  border-color: black;
+  text-align: center;
+  top: 100%;
+}
+
+.selectedTile{
+  border:solid;
+  float:left;
+  color:white;
+  background-color:red;
   border-color: black;
   text-align: center;
   top: 100%;
@@ -40,6 +50,7 @@
 }
 button {
   height:5%;
+  background-color:gray;
   width:100%;
   position: relative;
 }
@@ -68,3 +79,4 @@ h1{
   width: 5%;
   float:left;
 }
+
