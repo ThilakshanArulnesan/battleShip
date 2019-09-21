@@ -1,7 +1,16 @@
 let isWaiting = false;
 let gameState = "Not Started";
 let activeCell;
+let playerTiles;
+let opponentTiles;
+
+const GAME_SIZE = 10;
 const TICK_RATE = 500;//1 s before another action can be taken
+
+const playerShips = [];
+const opponentShips = [];
+
+
 const getArr = function(a1) {
   // Takes A1 notation and coverts it to a 2d index
   //Returns an array i,j indicating the index.
@@ -17,7 +26,6 @@ const getA1 = function(arr) {
 };
 
 const startGame = function() {
-  const GAME_SIZE = 10;
   //Resets the board:
   clearBoard();
   clearLog();
@@ -29,21 +37,22 @@ const startGame = function() {
   log("Welcome to battleship!");
   //Displays tiles and creates tile objects
   //Could look into seperating this functionality out
-  let playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
-  let opponentTiles = generateEmptyBoard(GAME_SIZE, "opponentBoard");
+  playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
+  opponentTiles = generateEmptyBoard(GAME_SIZE, "opponentBoard");
 
   //Load ship types:
-  const playerShips = [];
+
   playerShips.push(new Ship("Carrier", 5, "v", "player"));
   playerShips.push(new Ship("Battleship", 4, "v", "player"));
-  const opponentShips = [];
+
   opponentShips.push(new Ship("Carrier", 5, "v", "opponent"));
   opponentShips.push(new Ship("Battleship", 4, "v", "opponent"));
+
   opponentShips[1].isSunk = true;
   trackShips(playerShips, opponentShips);
   gameState = "setup";
 
-  log(`Please click on the player board (left) on the space where you'd like to place your carrier...`);
+  log(`Please click on the player board (left) on the space where you'd like to place your carrier (4)...`);
 };
 
 
@@ -54,12 +63,29 @@ const playerTilePressed = function(a1) {
 
   isWaiting = true;
   setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
-  console.log(`${a1}P`);
+  console.log(`${a1}`);
+  if (gameState === "setup") {
+    playerTiles[a1].state = "clicked";
 
-  $(`#${a1}P`).addClass('selectedTile');
+
+    displayTiles();
+  }
+};
 
 
+const displayTiles = function() {
+  if (gameState === "setup") {
+    for (let key in playerTiles) { //Display player info
+      let tile = playerTiles[key];
+      let a1 = tile.a1();
+      $(`#${a1}P`).removeClass('selectedTile'); //May be useful
 
+      if (tile.state === "clicked") {
+        $(`#${a1}P`).addClass('selectedTile'); //May be useful
+      }
+    }
+
+  }
 };
 
 
@@ -111,7 +137,7 @@ const clearBoard = function() {
 
 const generateEmptyBoard = function(n, boardName) {
   let p = Math.floor(100 / n) + "%"; //Percent of space to take up
-  let tiles = [];
+  let tiles = {};
   for (let i = 0; i < n; i++) {
     for (let j = 1; j < n + 1; j++) {
       let a1Not = getA1([i, j]);
@@ -119,7 +145,7 @@ const generateEmptyBoard = function(n, boardName) {
       // id = a1 notation of the space
       // id also contains whether player or opponent
       if (boardName === "playerBoard") {
-        tiles.push(Tile(i, j, boardName)); //Creates tile objects
+        tiles[a1Not] = new Tile(i, j, "player"); //Creates tile objects
         $(`.board#${boardName}`).append(`<div class="defaultTile" id="${a1Not}P"
       style="height:${p};width:${p}">${a1Not}</div>`);
         $(`.defaultTile#${a1Not}P`).bind("click",
@@ -127,7 +153,8 @@ const generateEmptyBoard = function(n, boardName) {
             playerTilePressed(a1Not);
           });
       } else {
-        tiles.push(Tile(i, j, boardName)); //Creates tile objects
+        //tiles.push(Tile(i, j, "opponent")); //Creates tile objects
+        tiles[a1Not] = new Tile(i, j, "player");
         $(`.board#${boardName}`).append(`<div class="defaultTile" id="${a1Not}O"
       style="height:${p};width:${p}">${a1Not}</div>`);
         $(`.defaultTile#${a1Not}O`).bind("click",
@@ -139,75 +166,8 @@ const generateEmptyBoard = function(n, boardName) {
 
     }
   }
+  console.log(tiles);
   return tiles;
 };
 
-function Ship(type, size, orientation, owner) {
-  //Ship constructor
-  this.owner = owner;
-  this.type = type;
-  this.size = size;
-  this.orientation = orientation;
-  this.tiles = []
-  this.isSunk = false;
-
-  //A tile has a location
-  this.setTiles = function(startTile) {
-    //This function should set all the tile locations
-    // A ship will have an array of tiles
-    /*  {
-    x: undefined,
-      y: undefined,
-        status: "invis"
-  };*/
-  };
-
-  this.isHit = function(tile) {
-    //Checks if the tile chosen contains a battleship
-    // If it does show it!
-  };
-
-};
-
-function Tile(x, y, boardName) {
-  this.x = x;
-  this.y = y;
-  this.hasShip = false; //Behaviour of tile depends on whether it has a ship or not
-  this.a1 = getA1(x, y); //Not sure if I'll really need this, shortcut
-  this.state = "w"; //w = water, a = active ship, d = destroyed ship
-  this.boardName = boardName;//Says which player we're dealing with
-
-};
-
-
-
-// const createShips = function() {
-//   /*
-//   Creates the   battleships that will be used.
-//   Right now the ships are static, but we can optionally change this
-//   */
-//   return ships = [
-//     {
-//       type: "Carrier",
-//       tiles: 5,
-//       orientation: "v",
-//     },
-//     {
-//       type: "Battleship",
-//       tiles: 4
-//     },
-//     {
-//       type: "Cruiser",
-//       tiles: 3
-//     },
-//     {
-//       type: "Submarine",
-//       tiles: 3
-//     },
-//     {
-//       type: "Destroyer",
-//       tiles: 2
-//     }
-//   ];
-// };
 
