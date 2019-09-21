@@ -53,11 +53,15 @@ const startGame = function() {
   opponentShips.push(new Ship("Battleship", 4, "v", "opponent"));
 
   opponentShips[1].isSunk = true;
-  trackShips(playerShips, opponentShips);
   gameState = "setup";
+
+  placeOpponentShip();
+  trackShips(playerShips, opponentShips);
 
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
 };
+
+
 
 
 const playerTilePressed = function(a1) {
@@ -85,7 +89,7 @@ const playerTilePressed = function(a1) {
     activeCell = a1;
 
     //playerTiles[a1].state = "selected";
-    let tiles = getTiles(playerShips[playerShipsPlaced], a1);
+    let tiles = getTiles(playerShips[playerShipsPlaced], a1, "player");
     if (tiles.length === 0) {
       displayTiles();
       return;
@@ -116,6 +120,20 @@ const displayTiles = function() {
       }
 
 
+    }
+
+    for (let key in opponentTiles) {//temporary for testing purposes
+      let tile = opponentTiles[key];
+      let a1 = tile.a1();
+      let myTile = $(`#${a1}O`);
+
+      myTile.removeClass('selectedTile');
+
+      if (tile.state === "selected") {
+        myTile.addClass('selectedTile');
+      } else if (tile.state === "hiddenShip") {
+        myTile.addClass('lockedTile');
+      }
     }
 
   }

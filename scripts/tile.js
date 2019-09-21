@@ -10,7 +10,7 @@ function Tile(x, y, player) {
 };
 
 
-const getTiles = function(ship, startTile) {
+const getTiles = function(ship, startTile, owner) {
   let arr = getArr(startTile);
   let x = arr[0];
   let y = arr[1];
@@ -21,18 +21,18 @@ const getTiles = function(ship, startTile) {
   /* Check if there is ship can be placed in the
    given orientation, o/w flip it and try. If both don't work send error*/
 
-  if ((!checkShipFitVertical(x, y, size)) && (!checkShipFitHorizontal(x, y, size))) {
+  if ((!checkShipFitVertical(x, y, size, owner)) && (!checkShipFitHorizontal(x, y, size, owner))) {
     log(`Cannot place the ship in cell ${startTile} try another locaiton`);
     return [];
   }
   console.log('here')
 
-  if (!checkShipFitVertical(x, y, size)) {
+  if (!checkShipFitVertical(x, y, size, owner)) {
     ship.orientation = "h";
   }
   console.log('here')
 
-  if (!checkShipFitHorizontal(x, y, size)) {
+  if (!checkShipFitHorizontal(x, y, size, owner)) {
     ship.orientation = "v";
   }
   let orientation = ship.orientation;
@@ -40,26 +40,42 @@ const getTiles = function(ship, startTile) {
 
   if (orientation === "v") {
     for (let i = y; i < y + ship.size; i++) {
-      tiles.push(playerTiles[getA1([x, i])]);
+      if (owner === "player") {
+        tiles.push(playerTiles[getA1([x, i])]);
+      } else if (owner === "opponent") {
+        tiles.push(opponentTiles[getA1([x, i])]);
+      }
+
     }
   } else if (orientation === "h") {
     for (let i = x; i < x + ship.size; i++) {
-      tiles.push(playerTiles[getA1([i, y])]);
+      if (owner === "player") {
+        tiles.push(playerTiles[getA1([i, y])]);
+      } else if (owner === "opponent") {
+        tiles.push(opponentTiles[getA1([i, y])]);
+      }
     }
 
   }
   return tiles;
 };
 
-const checkShipFitHorizontal = function(x, y, size) {
+const checkShipFitHorizontal = function(x, y, size, owner, owner) {
   boardFit = x + size <= GAME_SIZE;
   if (!boardFit) return false; //Doesn't fit on board, no need to check anything else
 
   //Check if all tiles are filled with water:
   for (let i = x; i < x + size; i++) {
-    if (playerTiles[getA1([i, y])].state !== "w") {
-      //Must be a water tile
-      return false;
+    if (owner === "player") {
+      if (playerTiles[getA1([i, y])].state !== "w") {
+        //Must be a water tile
+        return false;
+      }
+    } else if (owner === "opponent") {
+      if (opponentTiles[getA1([i, y])].state !== "w") {
+        //Must be a water tile
+        return false;
+      }
     }
   }
 
@@ -68,14 +84,21 @@ const checkShipFitHorizontal = function(x, y, size) {
 
 };
 
-const checkShipFitVertical = function(x, y, size) {
+const checkShipFitVertical = function(x, y, size, owner, owner) {
   boardFit = y + size <= GAME_SIZE + 1;
   if (!boardFit) return false; //Doesn't fit on board, no need to check anything else
 
   for (let i = y; i < y + size; i++) {
-    if (playerTiles[getA1([x, i])].state !== "w") {
-      //Must be a water tile
-      return false;
+    if (owner === "player") {
+      if (playerTiles[getA1([x, i])].state !== "w") {
+        //Must be a water tile
+        return false;
+      }
+    } else if (owner === "opponent") {
+      if (playerTiles[getA1([x, i])].state !== "w") {
+        //Must be a water tile
+        return false;
+      }
     }
   }
   return true;
