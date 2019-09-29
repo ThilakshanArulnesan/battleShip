@@ -265,8 +265,43 @@ const opponentTilePressed = function(a1) {
       gameState = "gameover";
     }
 
+
+    //Make opponent moves:
+    checkOpponentMoves();
+
   }
 };
+
+const checkOpponentMoves = function() {
+  let chosenTile = opponentTiles[myOpponent.getMove()];
+  console.log(chosenTile);
+
+  chosenTile.guessed = true;
+
+  if (chosenTile.state === "a") {
+    log(`Opponent shoots at ${a1}: HIT`);
+    chosenTile.state = 'd'; //Mark it as destroyed
+    chosenTile.hitState = 'h';
+    chosenTile.ship.setShipState(); //decides if ship is sunk.
+    if (chosenTile.ship.isSunk) {
+      trackShips(playerShips, opponentShips);
+      log(`Oh no! the opponent has sunk your battleship!"`);
+    }
+  } else {
+    log(`Opponent shoots at ${a1}: MISS`);
+    chosenTile.hitState = 'm';
+  }
+
+  displayTiles();
+
+  //Check if all opponent ships are sunk (Gameover state)
+  if (allShipsSunk(playerShips)) {
+    log(`The opponent has won :(. Press replay to try again`);
+    gameState = "gameover";
+  }
+
+
+}
 
 const trackShips = function() {
   //Prints out th the tracker area the active ships

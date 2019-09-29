@@ -3,24 +3,28 @@ class Opponent {
     this.activeTiles = playerTiles;
     this.hitTiles = undefined;
     this.missTiles = undefined;
+    this.difficulty = 1;
     //Pop out elements as used
   }
 
-  checkSquare(a1) {
-    let arr = getArr(a1); //A3 ==> (1,3) ==> [1,4]
-    arr[1] += 1;
-    this.square = 1;
-  };
+  // checkSquare(a1) {
+  //   let arr = getArr(a1); //A3 ==> (1,3) ==> [1,4]
+  //   arr[1] += 1;
+  //   this.square = 1;
+  // };
 
-  getA1() {
-
+  getMove() { //decides on the strategy to use and then makes the move
+    if (this.difficulty === 2) {
+      return this.pickNearHits();
+    }
+    return this.pickRandom();
   }
 
   pickRandom() { //Level 1 AI
     //Picks a random tile in the array and pops it out:
     let guessedIndex = Math.floor(Math.random() * (this.activeTiles.length - 1));
 
-    let guessedVal = this.activeTiles[guessedIndex].getA1(); //This will be the returned value;
+    let guessedVal = this.activeTiles[guessedIndex].a1(); //This will be the returned value;
     if (this.activeTiles[guessedIndex].state === "a") {
       this.hitTiles.push(this.activeTiles.splice(guessedIndex, 1));
     } else {
@@ -31,7 +35,7 @@ class Opponent {
   }
 
   pickNearHits() { //Level 2 AI
-
+    return "A1";
   }
 
 };
