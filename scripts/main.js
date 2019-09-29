@@ -35,6 +35,8 @@ let playerShipsPlaced = 0;
 let opponentShips = [];
 let opponentShipsPlaced = 0;
 
+let myOpponent;//Object storing opponent behaviour.AI
+
 const getArr = function(a1) {
   // Takes A1 notation and coverts it to a 2d index
   //Returns an array i,j indicating the index.
@@ -48,6 +50,7 @@ const getA1 = function(arr) {
   let letToNum = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   return letToNum[arr[0]] + arr[1];
 };
+
 
 const startGame = function() {
   //Resets the board:
@@ -63,7 +66,7 @@ const startGame = function() {
   //Could look into seperating this functionality out
   playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
   opponentTiles = generateEmptyBoard(GAME_SIZE, "opponentBoard");
-
+  myOpponent = new Opponent(playerTiles);
   //Load ship types:
 
   playerShips.push(new Ship("Carrier[5]", 5, "h", "player"));
@@ -218,6 +221,7 @@ const playerTilePressed = function(a1) {
 
 
 const opponentTilePressed = function(a1) {
+  //If this is pressed the game has begun
   if (isWaiting) return;
 
   isWaiting = true;
@@ -243,7 +247,7 @@ const opponentTilePressed = function(a1) {
       log(`Player shoots at ${a1}: HIT`);
       chosenTile.state = 'd'; //Mark it as destroyed
       chosenTile.hitState = 'h';
-      setShipState(chosenTile.ship)
+      chosenTile.ship.setShipState();
       if (chosenTile.ship.isSunk) {
         trackShips(playerShips, opponentShips);
         log(`Opponent: "You sunk my battleship!"`);

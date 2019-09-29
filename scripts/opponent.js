@@ -1,3 +1,43 @@
+class Opponent {
+  constructor(playerTiles) {
+    this.activeTiles = playerTiles;
+    this.hitTiles = undefined;
+    this.missTiles = undefined;
+    //Pop out elements as used
+  }
+
+  checkSquare(a1) {
+    let arr = getArr(a1); //A3 ==> (1,3) ==> [1,4]
+    arr[1] += 1;
+    this.square = 1;
+  };
+
+  getA1() {
+
+  }
+
+  pickRandom() { //Level 1 AI
+    //Picks a random tile in the array and pops it out:
+    let guessedIndex = Math.floor(Math.random() * (this.activeTiles.length - 1));
+
+    let guessedVal = this.activeTiles[guessedIndex].getA1(); //This will be the returned value;
+    if (this.activeTiles[guessedIndex].state === "a") {
+      this.hitTiles.push(this.activeTiles.splice(guessedIndex, 1));
+    } else {
+      this.missTiles.push(this.activeTiles.splice(guessedIndex, 1));
+    }
+
+    return guessedVal;
+  }
+
+  pickNearHits() { //Level 2 AI
+
+  }
+
+};
+
+
+
 
 const placeOpponentShip = function() {
   /*
@@ -58,5 +98,7 @@ const placeOpponentShip = function() {
   displayTiles();
   // }
 }
+
+
 
 

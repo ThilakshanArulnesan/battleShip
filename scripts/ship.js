@@ -20,29 +20,29 @@ class Ship {
 
   };
 
-  setShipState = function(ship) {
+  setShipState = function() {
     //Checks whether a ship has sunk
     let isSunk = true;
-    for (let tile of ship.tiles) {
+    for (let tile of this.tiles) {
       if (tile.state !== "d") {
         isSunk = false;
       }
     }
 
     if (isSunk) {
-      ship.isSunk = true;
+      this.isSunk = true;
     }
 
     return isSunk;
   };
+}
 
-  allShipsSunk = function(ships) {
-    console.log(ships);
-    for (let ship of ships) {
-      if (!ship.isSunk)//if any ship left, the game isn't over
-        return false;
-    }
-
-    return true;
+allShipsSunk = function(ships) {
+  console.log(ships);
+  for (let ship of ships) {
+    if (!ship.isSunk)//if any ship left, the game isn't over
+      return false;
   }
+
+  return true;
 }
