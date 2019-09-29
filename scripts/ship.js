@@ -1,47 +1,48 @@
+class Ship {
+  constructor(type, size, orientation, owner) {
+    //Ship constructor
+    this.owner = owner;
+    this.type = type;
+    this.size = size;
+    this.orientation = orientation;
+    this.toggleOrientation = function() {
+      if (this.orientation === "v") {
+        this.orientation = "h";
+      } else {
+        this.orientation = "v";
+      }
 
-function Ship(type, size, orientation, owner) {
-  //Ship constructor
-  this.owner = owner;
-  this.type = type;
-  this.size = size;
-  this.orientation = orientation;
-  this.toggleOrientation = function() {
-    if (this.orientation === "v") {
-      this.orientation = "h";
-    } else {
-      this.orientation = "v";
+
+    }
+    this.tiles = [];
+    this.isSunk = false;
+
+
+  };
+
+  setShipState = function(ship) {
+    //Checks whether a ship has sunk
+    let isSunk = true;
+    for (let tile of ship.tiles) {
+      if (tile.state !== "d") {
+        isSunk = false;
+      }
     }
 
-
-  }
-  this.tiles = [];
-  this.isSunk = false;
-
-
-};
-
-const setShipState = function(ship) {
-  //Checks whether a ship has sunk
-  let isSunk = true;
-  for (let tile of ship.tiles) {
-    if (tile.state !== "d") {
-      isSunk = false;
+    if (isSunk) {
+      ship.isSunk = true;
     }
+
+    return isSunk;
+  };
+
+  allShipsSunk = function(ships) {
+    console.log(ships);
+    for (let ship of ships) {
+      if (!ship.isSunk)//if any ship left, the game isn't over
+        return false;
+    }
+
+    return true;
   }
-
-  if (isSunk) {
-    ship.isSunk = true;
-  }
-
-  return isSunk;
-};
-
-const allShipsSunk = function(ships) {
-  console.log(ships);
-  for (let ship of ships) {
-    if (!ship.isSunk)//if any ship left, the game isn't over
-      return false;
-  }
-
-  return true;
 }

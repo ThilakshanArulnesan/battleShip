@@ -1,8 +1,28 @@
+/*
+NOTE TO SELF:
+- Placing pieces done
+- Player turns done
+
+TODO:
+- Let opponent choose where to go
+- Add allow user to submit a username
+    -Show leaderboard once done (how many times they've beaten computer)
+        -Display at endstate
+        -Allow soft restart game (don't need to enter username?)
+
+- Comment code
+- Make it look nice
+- Add images if possible
+
+-Work on stretch stuff
+*/
+
 let isWaiting = false;
 let gameState = "Not Started";
 let activeCell;
 let playerTiles;
 let opponentTiles;
+
 
 const GAME_SIZE = 10;
 const TICK_RATE = 500;//1 s before another action can be taken

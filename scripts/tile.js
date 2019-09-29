@@ -1,18 +1,19 @@
-function Tile(x, y, player) {
-  this.x = x;
-  this.y = y;
-  this.a1 = function() {
-    return getA1([this.x, this.y]);
-  }; //Not sure if I'll really need this, shortcut
-  this.state = "w"; //w = water, a = active ship, d = destroyed ship,
-  this.guessed = false;
-  this.hitState = "n";
-  this.ship = null;
-  this.player = player;//Says which player we're dealing with
-};
+class Tile {
+  constructor(x, y, player) {
+    this.x = x;
+    this.y = y;
+    this.a1 = function() {
+      return getA1([this.x, this.y]);
+    }; //Not sure if I'll really need this, shortcut
+    this.state = "w"; //w = water, a = active ship, d = destroyed ship,
+    this.guessed = false;
+    this.hitState = "n";
+    this.ship = null;
+    this.player = player;//Says which player we're dealing with
+  };
 
-
-const getTiles = function(ship, startTile, owner) {
+}
+getTiles = function(ship, startTile, owner) {
   let arr = getArr(startTile);
   let x = arr[0];
   let y = arr[1];
@@ -62,7 +63,8 @@ const getTiles = function(ship, startTile, owner) {
   return tiles;
 };
 
-const checkShipFitHorizontal = function(x, y, size, owner) {
+
+checkShipFitHorizontal = function(x, y, size, owner) {
   boardFit = x + size <= GAME_SIZE;
   if (!boardFit) return false; //Doesn't fit on board, no need to check anything else
 
@@ -86,7 +88,7 @@ const checkShipFitHorizontal = function(x, y, size, owner) {
 
 };
 
-const checkShipFitVertical = function(x, y, size, owner) {
+checkShipFitVertical = function(x, y, size, owner) {
   boardFit = y + size <= GAME_SIZE + 1;
   if (!boardFit) return false; //Doesn't fit on board, no need to check anything else
 
@@ -111,7 +113,7 @@ const checkShipFitVertical = function(x, y, size, owner) {
 
 
 
-const setTilesProperty = function(tiles, property, value) {
+setTilesProperty = function(tiles, property, value) {
   //Given an array or object containing tiles, will change all the tiles in the
   //object or array to have the property of value (e.g. change all the tiles to water)
   for (let tile in tiles) {
@@ -120,7 +122,7 @@ const setTilesProperty = function(tiles, property, value) {
   }
 };
 
-const getTilesProperty = function(tiles, property, searchVal) {
+getTilesProperty = function(tiles, property, searchVal) {
   // returns as array
   let retArr = [];
   for (let tile in tiles) {
@@ -133,5 +135,4 @@ const getTilesProperty = function(tiles, property, searchVal) {
   return retArr;
 
 }
-
 
