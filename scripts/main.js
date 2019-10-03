@@ -54,6 +54,8 @@ const getA1 = function(arr) {
 
 const startGame = function() {
   //Resets the board:
+
+  loadGameScreen();
   clearBoard();
   clearLog();
 
@@ -84,7 +86,31 @@ const startGame = function() {
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
 };
 
+const loadGameScreen = function() {
+  $(".gameboard").empty(); //resets the board
+  $(".gameboard").append(
+    `<div class="playerArea">
+  <div class="board" id="playerBoard"></div>
+  <div class="tracker" id="playerTracker">
+    <ul></ul>
+  </div>
+</div>
 
+<div id="controlArea">
+  <button id="okButton" onClick="okayPressed()">OKAY</button>
+  <button id="startRestart" onClick="startGame()">START</button>
+</div>
+
+<div class="playerArea">
+  <div class="board" id="opponentBoard"></div>
+  <div class="tracker" id="opponentTracker">
+    <ul></ul>
+  </div>
+</div>
+
+<textarea readonly type="text" class="console"></textarea>
+`);
+}
 
 
 
