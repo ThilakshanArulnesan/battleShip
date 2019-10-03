@@ -1,7 +1,29 @@
 # Battleship
 
+## Description
+Battleship is an in-browser battleship game using HTML, CSS, Javascript, and JQuery. A basic AI is provided to play against.
+Rules for battleship are found [here](https://www.cs.nmsu.edu/~bdu/TA/487/brules.htm)
+
+## Getting Started
+Open index.html in a browser to get started.
+
+### Placement phase
+During this phase of the game you are placing your ships. The order of ship placement is in a pre-defined order from largest ship to smallest. 
+
+Click on a tile to place a ship that starts on that tile. Ships will either be placed vertically with the user-selected tile at the top or horizontally with the user selected tile on the left. You will not be able to place a tile if the ship is too large to fit either vertically or horizontally. Click the same tile again to rotate it (if it is possible to rotate). At any time before locking you may change your selection by clicking on another tile. Press the lock button to lock that ships placement. Continue placing ships until all the ships have been exhausted.
+
+### Playing phase
+Select a square on the opponents board to be able to make a guess. The console will display whether there was a hit or miss and a visual indicator will show any tiles that have already been selected. The AI will make a move immediately after any player move. The game is over once all ships have been sunk.
+
+
+## Known bugs/Issues
+
+
+## Future Features
+- Multiplayer features
+- User accounts
+- Smarter AI 
 
 
 
-### Image sources:
-https://commons.wikimedia.org/wiki/File:Battleship_clipart.svg
+## Image sources:
