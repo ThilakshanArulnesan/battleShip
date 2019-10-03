@@ -1,0 +1,24 @@
+{
+  "name": "battleship",
+  "version": "1.0.0",
+  "description": "Battleship game",
+  "main": "index.js",
+  "dependencies": {
+    "browserfs": "^1.4.3",
+    "jquery": "^3.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThilakshanArulnesan/battleShip.git"
+  },
+  "author": "Thilakshan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThilakshanArulnesan/battleShip/issues"
+  },
+  "homepage": "https://github.com/ThilakshanArulnesan/battleShip#readme"
+}

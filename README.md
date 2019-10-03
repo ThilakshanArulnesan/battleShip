@@ -5,6 +5,7 @@ Battleship is an in-browser battleship game using HTML, CSS, Javascript, and JQu
 Rules for battleship are found [here](https://www.cs.nmsu.edu/~bdu/TA/487/brules.htm)
 
 ## Getting Started
+Run npm install to install dependencies (browserFS)
 Open index.html in a browser to get started.
 
 ### Placement phase
@@ -15,6 +16,11 @@ Click on a tile to place a ship that starts on that tile. Ships will either be p
 ### Playing phase
 Select a square on the opponents board to be able to make a guess. The console will display whether there was a hit or miss and a visual indicator will show any tiles that have already been selected. The AI will make a move immediately after any player move. The game is over once all ships have been sunk.
 
+## Dependecies
+- JQuery (imported using CDN)
+- Bootstrap (for styling)
+- Browserfs (for saving highscores for the computer)
+
 
 ## Known bugs/Issues
 
@@ -23,6 +29,7 @@ Select a square on the opponents board to be able to make a guess. The console w
 - Multiplayer features
 - User accounts
 - Smarter AI 
+
 
 
 

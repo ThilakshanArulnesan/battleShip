@@ -1,10 +1,6 @@
 /*
-NOTE TO SELF:
-- Placing pieces done
-- Player turns done
 
 TODO:
-- Let opponent choose where to go
 - Add allow user to submit a username
     -Show leaderboard once done (how many times they've beaten computer)
         -Display at endstate
@@ -17,6 +13,7 @@ TODO:
 -Work on stretch stuff
 */
 
+
 let isWaiting = false;
 let gameState = "Not Started";
 let activeCell;
@@ -26,8 +23,8 @@ let opponentTiles;
 
 const GAME_SIZE = 10;
 const TICK_RATE = 500;//1 s before another action can be taken
-
 const NUM_SHIPS = 1;
+let PLAYER_NAME = "NO_NAME";
 
 let playerShips = [];
 let playerShipsPlaced = 0;
@@ -52,11 +49,12 @@ const getA1 = function(arr) {
 };
 
 
-const startGame = function() {
+const startGame = function(opts) {
   //Resets the board:
   //loadTitleScreen();
 
   loadGameScreen();
+  PLAYER_NAME = opts.username;
   clearBoard();
   clearLog();
 
@@ -88,10 +86,70 @@ const startGame = function() {
 };
 
 const loadTitle = function() {
-  console.log("Added submit flag");
+  $(".gameboard").empty(); //resets the board
+  //I could save the code below in a textfile... I just don't want to deal with async right now :)
+  $(".gameboard").append(
+    `    <div class="container">
+<h2>Welcome to battleship!</h2>
+<form class="justify-content-center" id="options">
+  <div class="form-group">
+    <label> Username</label>
+    <input type="text" name="username">
+  </div>
+  <!-- A Carrier, which is 5 tiles long
+A Battleship, which is 4 tiles long
+A Cruiser, which is 3 tiles long
+A Submarine, which is 3 tiles long
+A Destroyer, which is 2 tiles long
+-->
+  <hr>
 
+  <div class="form-group">
+    <label>Ship Options:</label>
+  </div>
+
+  <div class="form-group">
+    <label>Number of Carriers (5 tiles)</label>
+    <input type="number" name="numCarrier" min="1" max="5" value="1">
+  </div>
+
+  <div class="form-group">
+    <label>Number of Battleships (4 tiles)</label>
+    <input type="number" name="numBattle" min="1" max="5" value="1">
+  </div>
+  <div class="form-group">
+    <label>Number of Cruisers (3 tiles)</label>
+    <input type="number" name="numCruiser" min="1" max="5" value="1">
+  </div>
+  <div class="form-group">
+    <label>Number of Submarine (3 tiles)</label>
+    <input type="number" name="numSub" min="1" max="5" value="1">
+  </div>
+  <div class="form-group">
+    <label>Number of Destroyers (2 tiles)</label>
+    <input type="number" name="numDest" min="1" max="5" value="1">
+  </div>
+
+  <hr>
+  <label>Other Options </label>
+
+  <div class="form-group">
+    <label>Board size: </label>
+    <input type="number" name="boardSize" min="8" max="20" value="10">
+  </div>
+
+  <div class="form-group">
+    <label>Number of shots per turn</label>
+    <input type="number" name="numShots" min="1" max="100" value="1">
+  </div>
+
+  <input type="submit">
+</form>
+<text id="msg" style="color:red">Hey</text>
+</div>`
+  );
   $("#options").submit((e) => {
-    e.preventDefault();
+    e.preventDefault(); //prevents refreshing the page
     console.log("PRESSED");
     let inputs = $('#options :input');
     console.log(inputs);
@@ -99,25 +157,23 @@ const loadTitle = function() {
     inputs.each(function() {
       opts[this.name] = $(this).val();
     });
-    console.log(opts);
 
-    startGame(opts);
+    let errMsg = verifyOptions(opts)
+    if (!errMsg) { //Empty string == we're good
+      startGame(opts);
+    } else {
+      $("#msg").text(errMsg);
+    }
   }
 
   );
 }
 
 
-const checkContents = function() {
-  console.log("hi");
-  console.log("bi");
-  $("form input").each(() => {
-    console.log($(this));
-  });
-  startGame();
-}
 
 const loadGameScreen = function() {
+
+
   $(".gameboard").empty(); //resets the board
   $(".gameboard").append(
     `<div class="playerArea">
@@ -141,7 +197,39 @@ const loadGameScreen = function() {
 
 <textarea readonly type="text" class="console"></textarea>
 `);
-}
+};
+
+const loadEndScreen = function(blnWon = true) {
+  $(".gameboard").empty(); //resets the board
+  $(".gameboard").append(`Loading...`);
+
+  let fs = require('fs');
+  let score = getScore(opponentShips, playerShips);
+  fs.readFile('/leaderboard.csv', function(err, contents) {
+
+    if (!contents) {
+      contents = "";
+    }
+    contents = contents.split(","); //array of users and scores
+    contents = highestScores(contents, PLAYER_NAME, score);
+    $(".gameboard").empty(); //resets the board
+    //Display your score
+    $(".gameboard").append(`<h3> Game over, you ${blnWon ? "Won" : "Lost"}. Your score was ${score} </h3>`);
+
+
+    //Display highscores (highlight player name)
+
+
+    let writeContents = contents.join(",");
+    fs.writeFile('/leaderboard.txt', writeContents, function(err) {
+
+      console.log("DONE WRITE");
+    });
+  });
+
+
+
+};
 
 
 
@@ -333,6 +421,7 @@ const opponentTilePressed = function(a1) {
     if (allShipsSunk(opponentShips)) {
       log(`Player has won! CONGRATULATIONS`);
       gameState = "gameover";
+      loadEndScreen(true);//load victory screen
     } else {
       //Make opponent moves:
       checkOpponentMoves();
@@ -367,6 +456,7 @@ const checkOpponentMoves = function() {
   if (allShipsSunk(playerShips)) {
     log(`The opponent has won :(. Press replay to try again`);
     gameState = "gameover";
+    loadEndScreen(false);//load defeat
   }
 
 
@@ -454,7 +544,6 @@ const generateEmptyBoard = function(n, boardName) {
             opponentTilePressed(a1Not);
           });
       }
-
 
     }
   }
