@@ -27,7 +27,7 @@ let opponentTiles;
 const GAME_SIZE = 10;
 const TICK_RATE = 500;//1 s before another action can be taken
 
-const NUM_SHIPS = 2;
+const NUM_SHIPS = 1;
 
 let playerShips = [];
 let playerShipsPlaced = 0;
@@ -70,10 +70,10 @@ const startGame = function() {
   //Load ship types:
 
   playerShips.push(new Ship("Carrier[5]", 5, "h", "player"));
-  playerShips.push(new Ship("Battleship[4]", 4, "v", "player"));
+  //playerShips.push(new Ship("Battleship[4]", 4, "v", "player"));
 
   opponentShips.push(new Ship("Carrier[5]", 5, "v", "opponent"));
-  opponentShips.push(new Ship("Battleship[4]", 4, "v", "opponent"));
+  //  opponentShips.push(new Ship("Battleship[4]", 4, "v", "opponent"));
 
   //opponentShips[1].isSunk = true;
   gameState = "setup";
@@ -89,7 +89,8 @@ const startGame = function() {
 
 
 const displayTiles = function() {
-  if (gameState === "setup") {
+  if (gameState === "setup") { //Setup view
+
     for (let key in playerTiles) { //Display player info
       let tile = playerTiles[key];
       let a1 = tile.a1();
@@ -102,8 +103,6 @@ const displayTiles = function() {
       } else if (tile.state === "a") {
         myTile.addClass('activeShipPiece');
       }
-
-
     }
 
     for (let key in opponentTiles) {//temporary for testing purposes
@@ -142,6 +141,17 @@ const displayTiles = function() {
         myTile.text("MISS").addClass("miss");
       }
     }
+    for (let key in playerTiles) {//temporary for testing purposes
+      let tile = playerTiles[key];
+      let a1 = tile.a1();
+      let myTile = $(`#${a1}P`); //Show grab the relevant player tile to display
+
+      if (tile.hitState === "h") {
+        myTile.text("HIT").addClass("hit");
+      } else if (tile.hitState === "m") {
+        myTile.text("MISS").addClass("miss");
+      }
+    }
 
   }
 };
@@ -168,10 +178,16 @@ const okayPressed = function() {
         log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         log("Let's begin!!");
 
-        //Randomize who goes first
-        log("You go first! Please pick a location");
-
         gameState = "playing";
+        //Randomize who goes first
+        if (Math.random() > 0.5) { //flip a coin
+          checkOpponentMoves();//Opponent moves
+          displayTiles();
+          log("We flipped a coin and you lost :(. Opponent went first.");
+        } else {
+          log("We flipped a coin, and you get to go first! Please pick a location");
+        }
+
         $("#okButton").hide();
 
       }
@@ -188,7 +204,6 @@ const playerTilePressed = function(a1) {
   isWaiting = true;
   setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
   if (gameState === "setup") {
-    console.log(`${a1}`);
     if (a1 !== activeCell) {
 
       let tiles = getTilesProperty(playerTiles, "state", "selected");
@@ -210,7 +225,6 @@ const playerTilePressed = function(a1) {
       displayTiles();
       return;
     }
-    console.log(tiles);
     setTilesProperty(tiles, "state", "selected");
     log(`Press okay if you are happy with the position.
     Select the same tile again if you want to change the orientation.
@@ -230,11 +244,10 @@ const opponentTilePressed = function(a1) {
   if (gameState === "playing") {
     //Player turn:
     activeCell = a1;
-    console.log(a1);
 
     //Check if the tile contains an opponent ship
     let chosenTile = opponentTiles[a1];
-    console.log(chosenTile);
+
     if (chosenTile.guessed) {
       log(`Already guessed this tile, try again`);
       displayTiles();
@@ -263,19 +276,17 @@ const opponentTilePressed = function(a1) {
     if (allShipsSunk(opponentShips)) {
       log(`Player has won! CONGRATULATIONS`);
       gameState = "gameover";
+    } else {
+      //Make opponent moves:
+      checkOpponentMoves();
     }
-
-
-    //Make opponent moves:
-    checkOpponentMoves();
-
   }
 };
 
 const checkOpponentMoves = function() {
-  let chosenTile = opponentTiles[myOpponent.getMove()];
-  console.log(chosenTile);
-
+  let chosenTile = myOpponent.getMove();
+  //  console.log(chosenTile);
+  let a1 = chosenTile.a1();
   chosenTile.guessed = true;
 
   if (chosenTile.state === "a") {
@@ -286,6 +297,7 @@ const checkOpponentMoves = function() {
     if (chosenTile.ship.isSunk) {
       trackShips(playerShips, opponentShips);
       log(`Oh no! the opponent has sunk your battleship!"`);
+      gameState = "gameover";
     }
   } else {
     log(`Opponent shoots at ${a1}: MISS`);
@@ -389,7 +401,6 @@ const generateEmptyBoard = function(n, boardName) {
 
     }
   }
-  console.log(tiles);
   return tiles;
 };
 
