@@ -6,8 +6,12 @@
   <meta name="A battleship game">
   <meta name="Thilakshan">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="shortcut icon" href="images/battleicon.png">
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+  <link rel="shortcut icon" href="images/battleicon.png">
   <script src="scripts/ship.js"></script>
   <script src="scripts/tile.js"></script>
   <script src="scripts/opponent.js"></script>
@@ -16,13 +20,68 @@
 
 <!--- Get rid of start later-->
 
-<body onload="startGame()">
+<body onload="loadTitle()">
   <!--  <script src="scripts/scripts.js"></script> -->
   <H1>
     Battleship!
   </H1>
 
   <div class="gameboard">
+    <div class="container">
+      <h2>Welcome to battleship!</h2>
+      <form class="justify-content-center" id="options">
+        <div class="form-group">
+          <label> Username</label>
+          <input type="text">
+        </div>
+        <!-- A Carrier, which is 5 tiles long
+A Battleship, which is 4 tiles long
+A Cruiser, which is 3 tiles long
+A Submarine, which is 3 tiles long
+A Destroyer, which is 2 tiles long
+-->
+        <hr>
+
+        <div class="form-group">
+          <label>Ship Options:</label>
+        </div>
+
+        <div class="form-group">
+          <label>Number of Carriers (5 tiles)</label>
+          <input type="number" name="numCarrier" min="1" max="5" value="1">
+        </div>
+
+        <div class="form-group">
+          <label>Number of Battleships (4 tiles)</label>
+          <input type="number" name="numBattle" min="1" max="5" value="1">
+        </div>
+        <div class="form-group">
+          <label>Number of Cruisers (3 tiles)</label>
+          <input type="number" name="numCruisers" min="1" max="5" value="1">
+        </div>
+        <div class="form-group">
+          <label>Number of Submarine (3 tiles)</label>
+          <input type="number" name="quantity" min="1" max="5" value="1">
+        </div>
+        <div class="form-group">
+          <label>Number of Destroyers (2 tiles)</label>
+          <input type="number" name="quantity" min="1" max="5" value="1">
+        </div>
+        <div class="form-group">
+          <label>Number of Destroyers (2 tiles)</label>
+          <input type="number" name="quantity" min="1" max="5" value="1">
+        </div>
+        <hr>
+        <label>Board Options </label>
+
+        <div class="form-group">
+          <label>Board size: </label>
+          <input type="number" name="quantity" min="8" max="20" value="10">
+        </div>
+
+        <input type="submit">
+      </form>
+    </div>
   </div>
 
 </body>

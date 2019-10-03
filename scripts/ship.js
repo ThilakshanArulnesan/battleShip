@@ -11,13 +11,9 @@ class Ship {
       } else {
         this.orientation = "v";
       }
-
-
     }
     this.tiles = [];
     this.isSunk = false;
-
-
   };
 
   setShipState = function() {
@@ -38,7 +34,6 @@ class Ship {
 }
 
 allShipsSunk = function(ships) {
-  console.log(ships);
   for (let ship of ships) {
     if (!ship.isSunk)//if any ship left, the game isn't over
       return false;

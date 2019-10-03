@@ -54,6 +54,7 @@ const getA1 = function(arr) {
 
 const startGame = function() {
   //Resets the board:
+  //loadTitleScreen();
 
   loadGameScreen();
   clearBoard();
@@ -85,6 +86,36 @@ const startGame = function() {
 
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
 };
+
+const loadTitle = function() {
+  console.log("Added submit flag");
+
+  $("#options").submit((e) => {
+    e.preventDefault();
+    console.log("PRESSED");
+    let inputs = $('#options :input');
+    console.log(inputs);
+    let opts = {};
+    inputs.each(function() {
+      opts[this.name] = $(this).val();
+    });
+    console.log(opts);
+
+    startGame(opts);
+  }
+
+  );
+}
+
+
+const checkContents = function() {
+  console.log("hi");
+  console.log("bi");
+  $("form input").each(() => {
+    console.log($(this));
+  });
+  startGame();
+}
 
 const loadGameScreen = function() {
   $(".gameboard").empty(); //resets the board
