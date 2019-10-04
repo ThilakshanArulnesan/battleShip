@@ -1,16 +1,12 @@
 /*
-
 TODO:
 - Add allow user to submit a username
     -Show leaderboard once done (how many times they've beaten computer)
-        -Display at endstate
         -Allow soft restart game (don't need to enter username?)
-
 - Comment code
 - Make it look nice
 - Add images if possible
-
--Work on stretch stuff
+- Work on stretch stuff
 */
 
 
@@ -33,21 +29,6 @@ let opponentShips = [];
 let opponentShipsPlaced = 0;
 
 let myOpponent;//Object storing opponent behaviour.AI
-
-const getArr = function(a1) {
-  // Takes A1 notation and coverts it to a 2d index
-  //Returns an array i,j indicating the index.
-  a1 = a1.toUpperCase();
-  let letToNum = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  return [letToNum.indexOf(a1[0]), Number(a1.slice(1))];
-};
-
-const getA1 = function(arr) {
-  // Inverse of getArr. Takes array and converts it to A1 notation
-  let letToNum = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  return letToNum[arr[0]] + arr[1];
-};
-
 
 const startGame = function(opts) {
   //Resets the board:
@@ -84,193 +65,6 @@ const startGame = function(opts) {
 
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
 };
-
-const loadTitle = function() {
-  $(".gameboard").empty(); //resets the board
-  //I could save the code below in a textfile... I just don't want to deal with async right now :)
-  $(".gameboard").append(
-    `    <div class="container">
-<h2>Welcome to battleship!</h2>
-<form class="justify-content-center" id="options">
-  <div class="form-group">
-    <label> Username</label>
-    <input type="text" name="username">
-  </div>
-  <!-- A Carrier, which is 5 tiles long
-A Battleship, which is 4 tiles long
-A Cruiser, which is 3 tiles long
-A Submarine, which is 3 tiles long
-A Destroyer, which is 2 tiles long
--->
-  <hr>
-
-  <div class="form-group">
-    <label>Ship Options:</label>
-  </div>
-
-  <div class="form-group">
-    <label>Number of Carriers (5 tiles)</label>
-    <input type="number" name="numCarrier" min="1" max="5" value="1">
-  </div>
-
-  <div class="form-group">
-    <label>Number of Battleships (4 tiles)</label>
-    <input type="number" name="numBattle" min="1" max="5" value="1">
-  </div>
-  <div class="form-group">
-    <label>Number of Cruisers (3 tiles)</label>
-    <input type="number" name="numCruiser" min="1" max="5" value="1">
-  </div>
-  <div class="form-group">
-    <label>Number of Submarine (3 tiles)</label>
-    <input type="number" name="numSub" min="1" max="5" value="1">
-  </div>
-  <div class="form-group">
-    <label>Number of Destroyers (2 tiles)</label>
-    <input type="number" name="numDest" min="1" max="5" value="1">
-  </div>
-
-  <hr>
-  <label>Other Options </label>
-
-  <div class="form-group">
-    <label>Board size: </label>
-    <input type="number" name="boardSize" min="8" max="20" value="10">
-  </div>
-
-  <div class="form-group">
-    <label>Number of shots per turn</label>
-    <input type="number" name="numShots" min="1" max="100" value="1">
-  </div>
-
-  <input type="submit">
-</form>
-<text id="msg" style="color:red">Hey</text>
-</div>`
-  );
-  $("#options").submit((e) => {
-    e.preventDefault(); //prevents refreshing the page
-    console.log("PRESSED");
-    let inputs = $('#options :input');
-    console.log(inputs);
-    let opts = {};
-    inputs.each(function() {
-      opts[this.name] = $(this).val();
-    });
-
-    let errMsg = verifyOptions(opts)
-    if (!errMsg) { //Empty string == we're good
-      startGame(opts);
-    } else {
-      $("#msg").text(errMsg);
-    }
-  }
-
-  );
-}
-
-
-
-const loadGameScreen = function() {
-
-
-  $(".gameboard").empty(); //resets the board
-  $(".gameboard").append(
-    `<div class="playerArea">
-  <div class="board" id="playerBoard"></div>
-  <div class="tracker" id="playerTracker">
-    <ul></ul>
-  </div>
-</div>
-
-<div id="controlArea">
-  <button id="okButton" onClick="okayPressed()">OKAY</button>
-  <button id="startRestart" onClick="startGame()">START</button>
-</div>
-
-<div class="playerArea">
-  <div class="board" id="opponentBoard"></div>
-  <div class="tracker" id="opponentTracker">
-    <ul></ul>
-  </div>
-</div>
-
-<textarea readonly type="text" class="console"></textarea>
-`);
-};
-
-const loadEndScreen = function(blnWon = true) {
-  $(".gameboard").empty(); //resets the board
-  $(".gameboard").append(`Loading...`);
-
-  let score = getScore(opponentShips, playerShips);
-  //This is a synchronous operation so could be a delayed
-
-  //localStorage.setItem("highscores", "elephant,1,cryptonites,2,me,3");
-  let contents = localStorage.getItem("highscores");
-  if (!contents) {
-    contents = ""; //First time on browser
-  }
-
-  contents = contents.split(","); //array of users and scores
-  contents = highestScores(contents, PLAYER_NAME, score, 10);
-  $(".gameboard").empty(); //resets the board
-  //Display your score
-  $(".gameboard").append(`<h3> Game over, you ${blnWon ? "won!" : "lost :(."} Your score was ${score} </h3>`);
-
-  $(".gameboard").append(`<h3> Here is the top 10 leaderboard </h3>`);
-
-  for (let i = 0; i < contents.length; i += 2) {
-    if (contents[i] === PLAYER_NAME) {
-      $(".gameboard").append(`<b style="color:green">${contents[i]}</b>  -   ${contents[i + 1]} <br>`);
-    } else {
-      $(".gameboard").append(`${contents[i]}  -  ${contents[i + 1]} <br>`);
-    }
-  }
-
-
-  //Display highscores (highlight player name)
-  let writeContents = contents.join(",");
-  console.log(writeContents);
-
-  localStorage.setItem("highscores", writeContents);
-  /*
-  fs.readFile('/leaderboard.csv', function(err, contents) {
-    console.log(err);
-    if (!contents) {
-      contents = "";
-    }
-    contents = contents.split(","); //array of users and scores
-    contents = highestScores(contents, PLAYER_NAME, score);
-    $(".gameboard").empty(); //resets the board
-    //Display your score
-    $(".gameboard").append(`<h3> Game over, you ${blnWon ? "Won" : "Lost"}. Your score was ${score} </h3>`);
-
-    for (let i = 0; i < contents.length; i += 2) {
-      if (contents[i] === PLAYER_NAME) {
-        $(".gameboard").append(`<b style="color:green">${contents[i]}</b> <span class="tab"><span class="tab"> ${contents[i + 1]} <br>`);
-      } else {
-        $(".gameboard").append(`${contents[i]} <span class="tab"><span class="tab"> ${contents[i + 1]} <br>`);
-      }
-    }
-
-
-    //Display highscores (highlight player name)
-
-
-    let writeContents = contents.join(",");
-    console.log(writeContents);
-    fs.File('/leaderboard.csv', writeContents, function(err) {
-
-      console.log("DONE WRITE");
-    });
-  });
-
-*/
-
-};
-
-
 
 const displayTiles = function() {
   if (gameState === "setup") { //Setup view
@@ -379,7 +173,6 @@ const okayPressed = function() {
   }
 };
 
-
 const playerTilePressed = function(a1) {
   // A tile has been pressed
   if (isWaiting) return;
@@ -416,7 +209,6 @@ const playerTilePressed = function(a1) {
     displayTiles();
   }
 };
-
 
 const opponentTilePressed = function(a1) {
   //If this is pressed the game has begun
@@ -524,69 +316,3 @@ const trackShips = function() {
   }
 
 };
-
-const log = function(msg) {
-  //Given a string, logs a message to the logger area
-  let myConsole = $('.console');
-  myConsole.append(msg + "\n");
-  myConsole.scrollTop(myConsole[0].scrollHeight);
-  // $(`.console`).scrollTop;
-
-}
-const clearLog = function() {
-  $(`.console`).text("");
-}
-const clearBoard = function() {
-  $('.tile').remove();
-
-  //Visual empty
-  setTilesProperty(playerTiles, "state", "w"); //reset player tiles
-  setTilesProperty(opponentTiles, "state", "w"); //reset player tiles
-  $(`.board`).empty();
-  $(`ul`).empty();
-  $("#okButton").show();
-
-
-  //Logically empty
-  opponentShips = [];
-  playerShips = [];
-  playerShipsPlaced = 0;
-  opponentShipsPlaced = 0;
-
-  displayTiles();
-};
-
-const generateEmptyBoard = function(n, boardName) {
-  let p = Math.floor(100 / n) + "%"; //Percent of space to take up
-  let tiles = {};
-  for (let j = 1; j < n + 1; j++) {
-    for (let i = 0; i < n; i++) {
-      let a1Not = getA1([i, j]);
-      //Create a tile object for each divider
-      // id = a1 notation of the space
-      // id also contains whether player or opponent
-      if (boardName === "playerBoard") {
-        tiles[a1Not] = new Tile(i, j, "player"); //Creates tile objects
-        $(`.board#${boardName}`).append(`<div class="defaultTile" id="${a1Not}P"
-      style="height:${p};width:${p}">${a1Not}</div>`);
-        $(`.defaultTile#${a1Not}P`).bind("click",
-          () => {
-            playerTilePressed(a1Not);
-          });
-      } else {
-        //tiles.push(Tile(i, j, "opponent")); //Creates tile objects
-        tiles[a1Not] = new Tile(i, j, "player");
-        $(`.board#${boardName}`).append(`<div class="defaultTile" id="${a1Not}O"
-      style="height:${p};width:${p}">${a1Not}</div>`);
-        $(`.defaultTile#${a1Not}O`).bind("click",
-          () => {
-            opponentTilePressed(a1Not);
-          });
-      }
-
-    }
-  }
-  return tiles;
-};
-
-
