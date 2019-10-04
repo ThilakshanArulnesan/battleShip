@@ -1,12 +1,12 @@
 /*
 TODO:
-- Add allow user to submit a username
-    -Show leaderboard once done (how many times they've beaten computer)
-        -Allow soft restart game (don't need to enter username?)
+- Show who's turn it is.
+-Allow soft restart game (don't need to enter username?)
 - Comment code
 - Make it look nice
 - Add images if possible
 - Work on stretch stuff
+- Hide opponent ships
 */
 
 
@@ -17,10 +17,11 @@ let playerTiles;
 let opponentTiles;
 
 
-const GAME_SIZE = 10;
-const TICK_RATE = 500;//1 s before another action can be taken
-const NUM_SHIPS = 1;
-let PLAYER_NAME = "NO_NAME";
+let GAME_SIZE = 10;
+const TICK_RATE = 500;//num of milliseconds before another move can  be made
+let NUM_SHIPS;
+let SHOTS_PER_TURN;
+let PLAYER_NAME;
 
 let playerShips = [];
 let playerShipsPlaced = 0;
@@ -35,13 +36,22 @@ const startGame = function(opts) {
   //loadTitleScreen();
 
   loadGameScreen();
+
+  //Get options:
   PLAYER_NAME = opts.username;
+  GAME_SIZE = opts.boardSize;
+  SHOTS_PER_TURN = opts.numShots;
+  let numCarrier = opts.numCarrier;
+  let numBattle = opts.numBattle;
+  let numCruiser = opts.numCruiser;
+  let numSub = opts.numSub;
+  let numDest = opts.numDest;
+  NUM_SHIPS = numCarrier + numBattle + numCruiser + numSub + numDest;
+
   clearBoard();
   clearLog();
 
   gameState = "started";
-
-  $(`#startRestart`).text("Restart");
 
   log("Welcome to battleship!");
   //Displays tiles and creates tile objects
@@ -51,11 +61,15 @@ const startGame = function(opts) {
   myOpponent = new Opponent(playerTiles);
   //Load ship types:
 
-  playerShips.push(new Ship("Carrier[5]", 5, "h", "player"));
-  //playerShips.push(new Ship("Battleship[4]", 4, "v", "player"));
-
-  opponentShips.push(new Ship("Carrier[5]", 5, "v", "opponent"));
-  //  opponentShips.push(new Ship("Battleship[4]", 4, "v", "opponent"));
+  addShip("Carrier [5]", 5, numCarrier);
+  addShip("Battleship [4]", 4, numBattle);
+  addShip("Cruiser [3]", 3, numCruiser);
+  addShip("Submarine [3]", 3, numSub);
+  addShip("Destroyer [2]", 2, numDest);
+  /*
+    playerShips.push(new Ship("Carrier[5]", 5, "v", "player"));
+    opponentShips.push(new Ship("Carrier[5]", 5, "v", "opponent"));
+    */
 
   //opponentShips[1].isSunk = true;
   gameState = "setup";
@@ -65,6 +79,14 @@ const startGame = function(opts) {
 
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
 };
+
+const addShip = function(name, size, number) {
+  for (let i = 0; i < number; i++) {
+    playerShips.push(new Ship(name, size, "h", "player"));
+    opponentShips.push(new Ship(name, size, "h", "opponent"));
+  }
+  console.log(opponentShips);
+}
 
 const displayTiles = function() {
   if (gameState === "setup") { //Setup view
@@ -96,7 +118,6 @@ const displayTiles = function() {
         myTile.addClass('activeShipPiece');
       }
 
-      console.log("here");
       if (tile.hitState === "h") {
         myTile.text("HIT");
       } else if (tile.hitState === "m") {
@@ -140,10 +161,10 @@ const okayPressed = function() {
   */
   if (gameState === "setup") {
     let selectedTiles = getTilesProperty(playerTiles, "state", "selected");
-    console.log(selectedTiles);
+
     if (selectedTiles.length > 0) {
       playerShips[playerShipsPlaced].tiles = selectedTiles;
-      console.log(playerShips[playerShipsPlaced]);
+
       setTilesProperty(selectedTiles, "state", "a");
       setTilesProperty(selectedTiles, "ship", playerShips[playerShipsPlaced]);
       activeCell = undefined;
@@ -159,15 +180,17 @@ const okayPressed = function() {
         gameState = "playing";
         //Randomize who goes first
         if (Math.random() > 0.5) { //flip a coin
+          log("We flipped a coin and you lost :(. Opponent went first.");
           checkOpponentMoves();//Opponent moves
           displayTiles();
-          log("We flipped a coin and you lost :(. Opponent went first.");
         } else {
           log("We flipped a coin, and you get to go first! Please pick a location");
         }
 
         $("#okButton").hide();
 
+      } else {
+        log(`Great! Now please select where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
       }
     }
   }

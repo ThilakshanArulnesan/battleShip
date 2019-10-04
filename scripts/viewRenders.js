@@ -11,7 +11,7 @@ const loadGameScreen = function() {
 
 <div id="controlArea">
   <button id="okButton" onClick="okayPressed()">OKAY</button>
-  <button id="startRestart" onClick="startGame()">START</button>
+  <button id="restart" onClick="loadTitle()">Restart</button>
 </div>
 
 <div class="playerArea">
@@ -50,24 +50,24 @@ A Destroyer, which is 2 tiles long
 
   <div class="form-group">
     <label>Number of Carriers (5 tiles)</label>
-    <input type="number" name="numCarrier" min="1" max="5" value="1">
+    <input type="number" name="numCarrier" min="0" max="5" value="1">
   </div>
 
   <div class="form-group">
     <label>Number of Battleships (4 tiles)</label>
-    <input type="number" name="numBattle" min="1" max="5" value="1">
+    <input type="number" name="numBattle" min="0" max="5" value="1">
   </div>
   <div class="form-group">
     <label>Number of Cruisers (3 tiles)</label>
-    <input type="number" name="numCruiser" min="1" max="5" value="1">
+    <input type="number" name="numCruiser" min="0" max="5" value="1">
   </div>
   <div class="form-group">
     <label>Number of Submarine (3 tiles)</label>
-    <input type="number" name="numSub" min="1" max="5" value="1">
+    <input type="number" name="numSub" min="0" max="5" value="1">
   </div>
   <div class="form-group">
     <label>Number of Destroyers (2 tiles)</label>
-    <input type="number" name="numDest" min="1" max="5" value="1">
+    <input type="number" name="numDest" min="0" max="5" value="1">
   </div>
 
   <hr>
@@ -85,17 +85,21 @@ A Destroyer, which is 2 tiles long
 
   <input type="submit">
 </form>
-<text id="msg" style="color:red">Hey</text>
+<text id="msg" style="color:red"></text>
 </div>`
   );
   $("#options").submit((e) => {
     e.preventDefault(); //prevents refreshing the page
-    console.log("PRESSED");
     let inputs = $('#options :input');
-    console.log(inputs);
+
     let opts = {};
     inputs.each(function() {
-      opts[this.name] = $(this).val();
+      if (this.name === "username")
+        opts[this.name] = $(this).val();
+      else {
+        opts[this.name] = Number($(this).val());
+
+      }
     });
 
     let errMsg = verifyOptions(opts)
@@ -139,6 +143,7 @@ const loadEndScreen = function(blnWon = true) {
       $(".gameboard").append(`${contents[i]}  -  ${contents[i + 1]} <br>`);
     }
   }
+  $(".gameboard").append(`<button id="restart" onClick="loadTitle()">Restart</button>`);
 
 
   //Display highscores (highlight player name)
@@ -172,10 +177,13 @@ const clearBoard = function() {
 
 
   //Logically empty
+  isWaiting = false;
+  gameState = "Not Started";
   opponentShips = [];
   playerShips = [];
   playerShipsPlaced = 0;
   opponentShipsPlaced = 0;
+  let myOpponent = undefined;
 
   displayTiles();
 };

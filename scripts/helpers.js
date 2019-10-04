@@ -25,6 +25,11 @@ const verifyOptions = function(opts) {
   if (!enoughSpace(opts)) {
     return "Please either increase the number of tiles or decrease the number of ships. There is not enough space on the board to proceed";
   }
+  if (opts.numBattle + opts.numCarrier + opts.numCruiser + opts.numDest + opts.numSub === 0) {
+    return "You must have at least one ship to play!";
+  }
+
+  //if(0<Number(opts.numCarrier) && )
 
   return retS;
 }
@@ -36,7 +41,6 @@ const getScore = function(opShips, plShips) {
   let negativePoints = getPoints(plShips);
 
   let score = positivePoints - negativePoints;
-
 
   return score > 0 ? score : 0;//will never get negative scores
 }

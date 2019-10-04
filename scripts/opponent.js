@@ -76,20 +76,14 @@ const placeOpponentShip = function() {
     if (tiles.length === 0) {
       continue; //try again
     }
-    console.log(tiles);
     setTilesProperty(tiles, "state", "selected");
-
-    log(`Press okay if you are happy with the position.
-  Select the same tile again if you want to change the orientation.
-  Otherwise select another cell.`);
-
 
     let selectedTiles = getTilesProperty(opponentTiles, "state", "selected");
 
 
     if (selectedTiles.length > 0) {
       opponentShips[opponentShipsPlaced].tiles = selectedTiles;
-      console.log(opponentShips[opponentShipsPlaced]);
+
       setTilesProperty(selectedTiles, "state", "a");
       setTilesProperty(selectedTiles, "ship", opponentShips[opponentShipsPlaced]);
 
