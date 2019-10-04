@@ -56,11 +56,7 @@ const arrayOf = function(obj) {
 
 const placeOpponentShip = function() {
   /*
-  Pick random locations and place the ships there. Always verify.
-  While loop until done.
-
-  POTENTIAL ISSUE: Could construct a scenario where its impossible to place all ships
-  and AI is stuck in infinite loop. Add an exit case later if needed?
+  Pick random locations and place the ships there. Always verify that it is possible to place the tile, if not try again. It should always be possible for the AI to place all the ships as we checked to ensure that the number of tiles the ships will take is less than 60% of the available board space.
   */
   let breakCond = 0; //Just here in case it loops for too long trying to place pieces
 
@@ -100,7 +96,7 @@ const placeOpponentShip = function() {
   }
 
   if (breakCond === 1000) {//Prevents game from continuing if the oppponent cannot place pieces
-    log("ERROR, COULD NOT PLACE OPPONENT PIECES. PLEASE TRY AGAIN");
+    log("ERROR, COULD NOT PLACE OPPONENT PIECES. PLEASE TRY AGAIN (REFRESH THE PAGE OR PRESS RESTART)");
     gameState = "ERROR";
   }
 

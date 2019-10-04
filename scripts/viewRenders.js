@@ -34,7 +34,7 @@ const loadTitle = function() {
 <form class="justify-content-center" id="options">
   <div class="form-group">
     <label> Username</label>
-    <input type="text" name="username">
+    <input type="text" name="username" value="me">
   </div>
   <!-- A Carrier, which is 5 tiles long
 A Battleship, which is 4 tiles long
@@ -50,20 +50,20 @@ A Destroyer, which is 2 tiles long
 
   <div class="form-group">
     <label>Number of Carriers (5 tiles)</label>
-    <input type="number" name="numCarrier" min="0" max="5" value="1">
+    <input type="number" name="numCarrier" min="0" max="5" value="0">
   </div>
 
   <div class="form-group">
     <label>Number of Battleships (4 tiles)</label>
-    <input type="number" name="numBattle" min="0" max="5" value="1">
+    <input type="number" name="numBattle" min="0" max="5" value="0">
   </div>
   <div class="form-group">
     <label>Number of Cruisers (3 tiles)</label>
-    <input type="number" name="numCruiser" min="0" max="5" value="1">
+    <input type="number" name="numCruiser" min="0" max="5" value="0">
   </div>
   <div class="form-group">
     <label>Number of Submarine (3 tiles)</label>
-    <input type="number" name="numSub" min="0" max="5" value="1">
+    <input type="number" name="numSub" min="0" max="5" value="0">
   </div>
   <div class="form-group">
     <label>Number of Destroyers (2 tiles)</label>

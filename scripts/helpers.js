@@ -13,6 +13,14 @@ const getA1 = function(arr) {
   return letToNum[arr[0]] + arr[1];
 };
 
+const highlightPlayerBoard = function() {
+  $("[id*=O]").fadeTo(TICK_RATE * 2, 0.5);
+  $("[id*=P]").fadeTo(TICK_RATE * 2, 1.0);
+}
+const highlightOpponentBoard = function() {
+  $("[id*=O]").fadeTo(TICK_RATE * 2, 1.0);
+  $("[id*=P]").fadeTo(TICK_RATE * 2, 0.5);
+}
 
 const verifyOptions = function(opts) {
   let retS = "";

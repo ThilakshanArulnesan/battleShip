@@ -7,7 +7,6 @@
 
 
 
-
 .defaultTile {
   box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -62,15 +61,21 @@
   float:left;
 }
 button {
-  height:5%;
   background-color:gray;
   width:100%;
   position: relative;
+  font-size: small;
+  color:lavender;
 }
 #restart{
   position: relative;
-  top:90%;
-
+  float:bottom;
+  top: calc(100% - 30px);
+  height: 30px;
+  margin: 0px;
+  font-size: small;
+  padding-left:0px;
+  padding-right:0px;
 }
 
 .console {
@@ -82,12 +87,13 @@ button {
   font-size: 20px;
 }
 
-h1{
+h2{
   text-align: center;
+  margin:0px;
 }
 
 #controlArea {
-  background-color: rgb(171, 196, 60);
+  background-color: white;
   height: 80%;
   width: 5%;
   float:left;

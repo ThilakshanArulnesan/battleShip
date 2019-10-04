@@ -15,7 +15,7 @@ let gameState = "Not Started";
 let activeCell;
 let playerTiles;
 let opponentTiles;
-
+let isPlayerTurn;
 
 let GAME_SIZE = 10;
 const TICK_RATE = 500;//num of milliseconds before another move can  be made
@@ -48,6 +48,8 @@ const startGame = function(opts) {
   let numDest = opts.numDest;
   NUM_SHIPS = numCarrier + numBattle + numCruiser + numSub + numDest;
 
+  let isPlayerTurn = true;
+
   clearBoard();
   clearLog();
 
@@ -78,6 +80,8 @@ const startGame = function(opts) {
   trackShips();
 
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
+  highlightPlayerBoard();
+
 };
 
 const addShip = function(name, size, number) {
@@ -181,10 +185,17 @@ const okayPressed = function() {
         //Randomize who goes first
         if (Math.random() > 0.5) { //flip a coin
           log("We flipped a coin and you lost :(. Opponent went first.");
+          isPlayerTurn = false;
+
+          highlightPlayerBoard();
+          log("Waiting for opponent...")
           checkOpponentMoves();//Opponent moves
           displayTiles();
+          isPlayerTurn = true;
+          highlightOpponentBoard();
         } else {
           log("We flipped a coin, and you get to go first! Please pick a location");
+          highlightOpponentBoard();
         }
 
         $("#okButton").hide();
@@ -204,6 +215,7 @@ const playerTilePressed = function(a1) {
   isWaiting = true;
   setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
   if (gameState === "setup") {
+
     if (a1 !== activeCell) {
 
       let tiles = getTilesProperty(playerTiles, "state", "selected");
@@ -278,12 +290,17 @@ const opponentTilePressed = function(a1) {
       loadEndScreen(true);//load victory screen
     } else {
       //Make opponent moves:
+      highlightPlayerBoard();
       checkOpponentMoves();
+      highlightOpponentBoard();
+
     }
   }
 };
 
 const checkOpponentMoves = function() {
+  // $("[id*=P]").fadeTo("slow", 0.2);
+
   let chosenTile = myOpponent.getMove();
   //  console.log(chosenTile);
   let a1 = chosenTile.a1();
@@ -297,14 +314,21 @@ const checkOpponentMoves = function() {
     if (chosenTile.ship.isSunk) {
       trackShips(playerShips, opponentShips);
       log(`Oh no! the opponent has sunk your battleship!"`);
-      gameState = "gameover";
     }
   } else {
     log(`Opponent shoots at ${a1}: MISS`);
     chosenTile.hitState = 'm';
   }
-
+  let prevBG = $(`#${chosenTile.a1().toUpperCase()}P`).css("backgroundColor");
+  $(`#${chosenTile.a1().toUpperCase()}P`).animate({
+    "backgroundColor": 'yellow'
+  }, TICK_RATE / 10, () => {
+    $(`#${chosenTile.a1().toUpperCase()}P`).animate({
+      "backgroundColor": prevBG
+    }, TICK_RATE / 10);
+  });
   displayTiles();
+
 
   //Check if all opponent ships are sunk (Gameover state)
   if (allShipsSunk(playerShips)) {
