@@ -205,8 +205,39 @@ const loadEndScreen = function(blnWon = true) {
 
   let fs = require('fs');
   let score = getScore(opponentShips, playerShips);
-  fs.readFile('/leaderboard.csv', function(err, contents) {
+  //This is a synchronous operation so could be a delayed
 
+  //localStorage.setItem("highscores", "elephant,1,cryptonites,2,me,3");
+  let contents = localStorage.getItem("highscores");
+  if (!contents) {
+    contents = ""; //First time on browser
+  }
+
+  contents = contents.split(","); //array of users and scores
+  contents = highestScores(contents, PLAYER_NAME, score, 10);
+  $(".gameboard").empty(); //resets the board
+  //Display your score
+  $(".gameboard").append(`<h3> Game over, you ${blnWon ? "won!" : "lost :(."} Your score was ${score} </h3>`);
+
+  $(".gameboard").append(`<h3> Here is the top 10 leaderboard </h3>`);
+
+  for (let i = 0; i < contents.length; i += 2) {
+    if (contents[i] === PLAYER_NAME) {
+      $(".gameboard").append(`<b style="color:green">${contents[i]}</b>  -   ${contents[i + 1]} <br>`);
+    } else {
+      $(".gameboard").append(`${contents[i]}  -  ${contents[i + 1]} <br>`);
+    }
+  }
+
+
+  //Display highscores (highlight player name)
+  let writeContents = contents.join(",");
+  console.log(writeContents);
+
+  localStorage.setItem("highscores", writeContents);
+  /*
+  fs.readFile('/leaderboard.csv', function(err, contents) {
+    console.log(err);
     if (!contents) {
       contents = "";
     }
@@ -216,18 +247,27 @@ const loadEndScreen = function(blnWon = true) {
     //Display your score
     $(".gameboard").append(`<h3> Game over, you ${blnWon ? "Won" : "Lost"}. Your score was ${score} </h3>`);
 
+    for (let i = 0; i < contents.length; i += 2) {
+      if (contents[i] === PLAYER_NAME) {
+        $(".gameboard").append(`<b style="color:green">${contents[i]}</b> <span class="tab"><span class="tab"> ${contents[i + 1]} <br>`);
+      } else {
+        $(".gameboard").append(`${contents[i]} <span class="tab"><span class="tab"> ${contents[i + 1]} <br>`);
+      }
+    }
+
 
     //Display highscores (highlight player name)
 
 
     let writeContents = contents.join(",");
-    fs.writeFile('/leaderboard.txt', writeContents, function(err) {
+    console.log(writeContents);
+    fs.File('/leaderboard.csv', writeContents, function(err) {
 
       console.log("DONE WRITE");
     });
   });
 
-
+*/
 
 };
 
