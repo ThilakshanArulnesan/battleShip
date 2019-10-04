@@ -20,6 +20,7 @@ const highlightPlayerBoard = function() {
 const highlightOpponentBoard = function() {
   $("[id*=O]").fadeTo(TICK_RATE * 2, 1.0);
   $("[id*=P]").fadeTo(TICK_RATE * 2, 0.5);
+
 }
 
 const verifyOptions = function(opts) {

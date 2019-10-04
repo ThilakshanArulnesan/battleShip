@@ -22,7 +22,7 @@ const TICK_RATE = 500;//num of milliseconds before another move can  be made
 let NUM_SHIPS;
 let SHOTS_PER_TURN;
 let PLAYER_NAME;
-
+let shotsSoFar = 0;
 let playerShips = [];
 let playerShipsPlaced = 0;
 
@@ -47,8 +47,6 @@ const startGame = function(opts) {
   let numSub = opts.numSub;
   let numDest = opts.numDest;
   NUM_SHIPS = numCarrier + numBattle + numCruiser + numSub + numDest;
-
-  let isPlayerTurn = true;
 
   clearBoard();
   clearLog();
@@ -89,7 +87,7 @@ const addShip = function(name, size, number) {
     playerShips.push(new Ship(name, size, "h", "player"));
     opponentShips.push(new Ship(name, size, "h", "opponent"));
   }
-  console.log(opponentShips);
+
 }
 
 const displayTiles = function() {
@@ -211,7 +209,6 @@ const playerTilePressed = function(a1) {
   // A tile has been pressed
   if (isWaiting) return;
 
-
   isWaiting = true;
   setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
   if (gameState === "setup") {
@@ -251,7 +248,6 @@ const opponentTilePressed = function(a1) {
 
   isWaiting = true;
   setTimeout(() => isWaiting = false, TICK_RATE);//Will block tile from being pressed again immediately
-
   if (gameState === "playing") {
     //Player turn:
     activeCell = a1;
@@ -282,61 +278,68 @@ const opponentTilePressed = function(a1) {
     }
 
     displayTiles();
+    shotsSoFar++;
 
     //Check if all opponent ships are sunk (Gameover state)
     if (allShipsSunk(opponentShips)) {
       log(`Player has won! CONGRATULATIONS`);
       gameState = "gameover";
       loadEndScreen(true);//load victory screen
-    } else {
+    } else if (shotsSoFar >= SHOTS_PER_TURN) {
+      shotsSoFar = 0;
+
       //Make opponent moves:
       highlightPlayerBoard();
-      checkOpponentMoves();
+      isWaiting = true;
       highlightOpponentBoard();
-
+      checkOpponentMoves(SHOTS_PER_TURN);
+      isWaiting = false;
     }
   }
 };
 
-const checkOpponentMoves = function() {
-  // $("[id*=P]").fadeTo("slow", 0.2);
+const checkOpponentMoves = function(numMoves) {
 
-  let chosenTile = myOpponent.getMove();
-  //  console.log(chosenTile);
-  let a1 = chosenTile.a1();
-  chosenTile.guessed = true;
+  let j = 0;
+  while (j < numMoves) {
+    let chosenTile = myOpponent.getMove();
+    //  console.log(chosenTile);
+    let a1 = chosenTile.a1();
+    chosenTile.guessed = true;
 
-  if (chosenTile.state === "a") {
-    log(`Opponent shoots at ${a1}: HIT`);
-    chosenTile.state = 'd'; //Mark it as destroyed
-    chosenTile.hitState = 'h';
-    chosenTile.ship.setShipState(); //decides if ship is sunk.
-    if (chosenTile.ship.isSunk) {
-      trackShips(playerShips, opponentShips);
-      log(`Oh no! the opponent has sunk your battleship!"`);
+    if (chosenTile.state === "a") {
+      log(`Opponent shoots at ${a1}: HIT`);
+      chosenTile.state = 'd'; //Mark it as destroyed
+      chosenTile.hitState = 'h';
+      chosenTile.ship.setShipState(); //decides if ship is sunk.
+      if (chosenTile.ship.isSunk) {
+        trackShips(playerShips, opponentShips);
+        log(`Oh no! the opponent has sunk your battleship!"`);
+      }
+    } else {
+      log(`Opponent shoots at ${a1}: MISS`);
+      chosenTile.hitState = 'm';
     }
-  } else {
-    log(`Opponent shoots at ${a1}: MISS`);
-    chosenTile.hitState = 'm';
-  }
-  let prevBG = $(`#${chosenTile.a1().toUpperCase()}P`).css("backgroundColor");
-  $(`#${chosenTile.a1().toUpperCase()}P`).animate({
-    "backgroundColor": 'yellow'
-  }, TICK_RATE / 10, () => {
+    let prevBG = $(`#${chosenTile.a1().toUpperCase()}P`).css("backgroundColor");
     $(`#${chosenTile.a1().toUpperCase()}P`).animate({
-      "backgroundColor": prevBG
-    }, TICK_RATE / 10);
-  });
-  displayTiles();
+      "backgroundColor": 'yellow'
+    }, TICK_RATE / 3, () => {
+      $(`#${chosenTile.a1().toUpperCase()}P`).animate({
+        "backgroundColor": prevBG
+      }, TICK_RATE / 3);
+    });
+    displayTiles();
 
 
-  //Check if all opponent ships are sunk (Gameover state)
-  if (allShipsSunk(playerShips)) {
-    log(`The opponent has won :(. Press replay to try again`);
-    gameState = "gameover";
-    loadEndScreen(false);//load defeat
+    //Check if all opponent ships are sunk (Gameover state)
+    if (allShipsSunk(playerShips)) {
+      log(`The opponent has won :(. Press replay to try again`);
+      gameState = "gameover";
+      loadEndScreen(false);//load defeat
+      break;
+    }
+    j++;
   }
-
 
 }
 
