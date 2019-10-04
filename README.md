@@ -24,7 +24,7 @@ The local highscore is being tracked (tied to the browser) using the username pr
 ## Dependecies
 - JQuery (imported using CDN)
 - Bootstrap (for styling)
-- Browserfs (for saving highscores for the computer)
+
 
 
 ## Known bugs/Issues

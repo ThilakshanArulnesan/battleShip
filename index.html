@@ -17,19 +17,7 @@
   <script src="scripts/tile.js"></script>
   <script src="scripts/opponent.js"></script>
   <script src="scripts/main.js"></script>
-  <script type="text/javascript" src="node_modules/browserfs/dist/browserfs.min.js"></script>
-  <script type="text/javascript">
-    BrowserFS.install(window);
-    BrowserFS.configure({
-      fs: "LocalStorage"
-    }, function(e) {
-      if (e) {
-        // An error happened!
-        throw e;
-      }
-      // Otherwise, BrowserFS is ready-to-use!
-    });
-  </script>
+
 </head>
 
 <!--- Get rid of start later-->

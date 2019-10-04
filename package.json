@@ -4,7 +4,6 @@
   "description": "Battleship game",
   "main": "index.js",
   "dependencies": {
-    "browserfs": "^1.4.3",
     "jquery": "^3.4.1"
   },
   "devDependencies": {},

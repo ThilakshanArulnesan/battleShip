@@ -203,7 +203,6 @@ const loadEndScreen = function(blnWon = true) {
   $(".gameboard").empty(); //resets the board
   $(".gameboard").append(`Loading...`);
 
-  let fs = require('fs');
   let score = getScore(opponentShips, playerShips);
   //This is a synchronous operation so could be a delayed
 
