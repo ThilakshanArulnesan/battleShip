@@ -16,11 +16,31 @@ const verifyOptions = function(opts) {
 
 
 const getScore = function(opShips, plShips) {
-  return 10;
+  //Score will be defined as num
+  let positivePoints = getPoints(opShips);
+  let negativePoints = getPoints(plShips);
+
+  let score = positivePoints - negativePoints;
+
+
+  return score > 0 ? score : 0;//will never get negative scores
 }
 
-const highestScore = function(arr, player, score) {
-  const numPlayers = 5;
+const getPoints = function(ships) {
+  let points = 0;
+  for (let ship of ships) {
+    //get the tiles:
+    for (let tile of ship.tiles) {
+      if (tile.state === "d") {
+        points++;
+      }
+    }
+  }
+  return points;
+}
+
+const highestScores = function(arr, player, score, maxPlayers) {
+  const numPlayers = maxPlayers;
   //Adds the player to the list of players IF their score is higher than the rest. Adds them in order.
   let blnAdded = false;
   if (!arr || arr.length < 2) {
@@ -29,7 +49,7 @@ const highestScore = function(arr, player, score) {
     arr.push(score);
   } else {
     for (let i = 1; i < arr.length; i += 2) {
-      if (score > arr[i]) { //Add the player in place. our array is in order since we're the only ones manipulating it
+      if (score >= arr[i]) { //Add the player in place. our array is in order since we're the only ones manipulating it
         arr.splice(i - 1, 0, score);
         arr.splice(i - 1, 0, player);
         blnAdded = true;
@@ -42,8 +62,11 @@ const highestScore = function(arr, player, score) {
       arr.push(player);
       arr.push(score);
     }
-
+    if (arr.length > numPlayers) {
+      arr = arr.slice(0, numPlayers * 2); //Only take the top numPlayers
+    }
   }
+
   return arr;
 }
 
