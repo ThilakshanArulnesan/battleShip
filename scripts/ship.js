@@ -18,6 +18,7 @@ class Ship {
 
   setShipState = function() {
     //Checks whether a ship has sunk
+    console.log(this);
     let isSunk = true;
     for (let tile of this.tiles) {
       if (tile.state !== "d") {

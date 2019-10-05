@@ -1,10 +1,6 @@
 /*
 TODO:
-- Show who's turn it is.
--Allow soft restart game (don't need to enter username?)
-- Comment code
 - Make it look nice
-- Add images if possible
 - Work on stretch stuff
 - Hide opponent ships
 */
@@ -13,8 +9,10 @@ TODO:
 let isWaiting = false;
 let gameState = "Not Started";
 let activeCell;
+
 let playerTiles;
 let opponentTiles;
+
 let isPlayerTurn;
 
 let GAME_SIZE = 10;
@@ -41,6 +39,8 @@ const startGame = function(opts) {
   PLAYER_NAME = opts.username;
   GAME_SIZE = opts.boardSize;
   SHOTS_PER_TURN = opts.numShots;
+  let diff = opts.difficulty;
+  console.log("The difficulty is: " + diff);
   let numCarrier = opts.numCarrier;
   let numBattle = opts.numBattle;
   let numCruiser = opts.numCruiser;
@@ -58,7 +58,7 @@ const startGame = function(opts) {
   //Could look into seperating this functionality out
   playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
   opponentTiles = generateEmptyBoard(GAME_SIZE, "opponentBoard");
-  myOpponent = new Opponent(playerTiles);
+  myOpponent = new Opponent(playerTiles, diff);
   //Load ship types:
 
   addShip("Carrier [5]", 5, numCarrier);
@@ -268,6 +268,7 @@ const opponentTilePressed = function(a1) {
       chosenTile.state = 'd'; //Mark it as destroyed
       chosenTile.hitState = 'h';
       chosenTile.ship.setShipState();
+
       if (chosenTile.ship.isSunk) {
         trackShips(playerShips, opponentShips);
         log(`Opponent: "You sunk my battleship!"`);
@@ -301,7 +302,7 @@ const opponentTilePressed = function(a1) {
 const checkOpponentMoves = function(numMoves) {
 
   let j = 0;
-  while (j < numMoves) {
+  while (j < numMoves) { //opponent makes a certain number of moves
     let chosenTile = myOpponent.getMove();
     //  console.log(chosenTile);
     let a1 = chosenTile.a1();
@@ -311,7 +312,10 @@ const checkOpponentMoves = function(numMoves) {
       log(`Opponent shoots at ${a1}: HIT`);
       chosenTile.state = 'd'; //Mark it as destroyed
       chosenTile.hitState = 'h';
-      chosenTile.ship.setShipState(); //decides if ship is sunk.
+
+      let isSunk = chosenTile.ship.setShipState(); //decides if ship is sunk.
+      myOpponent.getInfo(chosenTile, true, isSunk);
+
       if (chosenTile.ship.isSunk) {
         trackShips(playerShips, opponentShips);
         log(`Oh no! the opponent has sunk your battleship!"`);

@@ -23,8 +23,8 @@ getTiles = function(ship, startTile, owner) {
   let size = ship.size;
   /* Check if there is ship can be placed in the
    given orientation, o/w flip it and try. If both don't work send error*/
-  console.log("The ship size is" + ship.size);
-  console.log("The ship size owner" + ship.owner);
+  console.log("The ship size is " + ship.size);
+  console.log("The ship size owner " + ship.owner);
 
   if ((!checkShipFitVertical(x, y, size, owner)) && (!checkShipFitHorizontal(x, y, size, owner))) {
     log(`Cannot place the ship in cell ${startTile} try another location.`);

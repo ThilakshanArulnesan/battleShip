@@ -50,7 +50,7 @@ A Destroyer, which is 2 tiles long
 
   <div class="form-group">
     <label>Number of Carriers (5 tiles)</label>
-    <input type="number" name="numCarrier" min="0" max="5" value="0">
+    <input type="number" name="numCarrier" min="0" max="5" value="3">
   </div>
 
   <div class="form-group">
@@ -67,7 +67,7 @@ A Destroyer, which is 2 tiles long
   </div>
   <div class="form-group">
     <label>Number of Destroyers (2 tiles)</label>
-    <input type="number" name="numDest" min="0" max="5" value="1">
+    <input type="number" name="numDest" min="0" max="5" value="0">
   </div>
 
   <hr>
@@ -81,6 +81,15 @@ A Destroyer, which is 2 tiles long
   <div class="form-group">
     <label>Number of shots per turn</label>
     <input type="number" name="numShots" min="1" max="100" value="1">
+  </div>
+
+  <div class="form-group">
+    <label>AI Diculty</label>
+    <select name="difficulty">
+    <option value="2">Hard</option>
+    <option value="1">Easy</option>
+</select>
+
   </div>
 
   <input type="submit">
