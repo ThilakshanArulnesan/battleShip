@@ -40,7 +40,7 @@ const startGame = function(opts) {
   GAME_SIZE = opts.boardSize;
   SHOTS_PER_TURN = opts.numShots;
   let diff = opts.difficulty;
-  console.log("The difficulty is: " + diff);
+
   let numCarrier = opts.numCarrier;
   let numBattle = opts.numBattle;
   let numCruiser = opts.numCruiser;
@@ -288,13 +288,21 @@ const opponentTilePressed = function(a1) {
       loadEndScreen(true);//load victory screen
     } else if (shotsSoFar >= SHOTS_PER_TURN) {
       shotsSoFar = 0;
-
+      log(`Opponents turn, please wait...`);
       //Make opponent moves:
       highlightPlayerBoard();
       isWaiting = true;
       highlightOpponentBoard();
       checkOpponentMoves(SHOTS_PER_TURN);
+      if (gameState === "gameover") {
+        return;  //Don't log any more, game is over, opponent won
+      }
+      let numShotsLeft = SHOTS_PER_TURN - shotsSoFar;
+      log(`Your turn! Take another shot, you have ${numShotsLeft} shot${numShotsLeft > 1 ? "s" : ""} left this turn.`);
       isWaiting = false;
+    } else {
+      let numShotsLeft = SHOTS_PER_TURN - shotsSoFar;
+      log(`You may take another shot, you have ${numShotsLeft} shot${numShotsLeft > 1 ? "s" : ""} left this turn.`);
     }
   }
 };
@@ -304,7 +312,7 @@ const checkOpponentMoves = function(numMoves) {
   let j = 0;
   while (j < numMoves) { //opponent makes a certain number of moves
     let chosenTile = myOpponent.getMove();
-    //  console.log(chosenTile);
+
     let a1 = chosenTile.a1();
     chosenTile.guessed = true;
 
@@ -314,7 +322,7 @@ const checkOpponentMoves = function(numMoves) {
       chosenTile.hitState = 'h';
 
       let isSunk = chosenTile.ship.setShipState(); //decides if ship is sunk.
-      myOpponent.getInfo(chosenTile, true, isSunk);
+      myOpponent.getInfo(chosenTile, true, isSunk, chosenTile.ship.size);
 
       if (chosenTile.ship.isSunk) {
         trackShips(playerShips, opponentShips);

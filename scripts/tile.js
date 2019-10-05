@@ -23,19 +23,19 @@ getTiles = function(ship, startTile, owner) {
   let size = ship.size;
   /* Check if there is ship can be placed in the
    given orientation, o/w flip it and try. If both don't work send error*/
-  console.log("The ship size is " + ship.size);
-  console.log("The ship size owner " + ship.owner);
+
+
 
   if ((!checkShipFitVertical(x, y, size, owner)) && (!checkShipFitHorizontal(x, y, size, owner))) {
     log(`Cannot place the ship in cell ${startTile} try another location.`);
     return [];
   }
-  console.log('here')
+
 
   if (!checkShipFitVertical(x, y, size, owner)) {
     ship.orientation = "h";
   }
-  console.log('here')
+
 
   if (!checkShipFitHorizontal(x, y, size, owner)) {
     ship.orientation = "v";
@@ -119,7 +119,7 @@ setTilesProperty = function(tiles, property, value) {
   //Given an array or object containing tiles, will change all the tiles in the
   //object or array to have the property of value (e.g. change all the tiles to water)
   for (let tile in tiles) {
-    //console.log(tile);
+
     tiles[tile][property] = value;
   }
 };
@@ -128,7 +128,7 @@ getTilesProperty = function(tiles, property, searchVal) {
   // returns as array
   let retArr = [];
   for (let tile in tiles) {
-    //console.log(tile);
+
     if (tiles[tile][property] === searchVal) {
       retArr.push(tiles[tile]);
     }

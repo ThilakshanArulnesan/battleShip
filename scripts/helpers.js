@@ -16,16 +16,16 @@ const getA1 = function(arr) {
 const highlightPlayerBoard = function() {
   $("[id*=O]").fadeTo(TICK_RATE * 2, 0.5);
   $("[id*=P]").fadeTo(TICK_RATE * 2, 1.0);
-}
+};
 const highlightOpponentBoard = function() {
   $("[id*=O]").fadeTo(TICK_RATE * 2, 1.0);
   $("[id*=P]").fadeTo(TICK_RATE * 2, 0.5);
 
-}
+};
 
 const verifyOptions = function(opts) {
   let retS = "";
-  console.log(opts);
+
   if (!opts.username) {
     return "Please enter a valid name";
   }
@@ -41,7 +41,7 @@ const verifyOptions = function(opts) {
   //if(0<Number(opts.numCarrier) && )
 
   return retS;
-}
+};
 
 
 const getScore = function(opShips, plShips) {
@@ -52,7 +52,7 @@ const getScore = function(opShips, plShips) {
   let score = positivePoints - negativePoints;
 
   return score > 0 ? score : 0;//will never get negative scores
-}
+};
 
 const getPoints = function(ships) {
   let points = 0;
@@ -65,7 +65,7 @@ const getPoints = function(ships) {
     }
   }
   return points;
-}
+};
 
 const highestScores = function(arr, player, score, maxPlayers) {
   const numPlayers = maxPlayers;
@@ -96,7 +96,7 @@ const highestScores = function(arr, player, score, maxPlayers) {
   }
 
   return arr;
-}
+};
 
 
 
@@ -111,7 +111,7 @@ const enoughSpace = function(opts) {
     opts.numCruiser * 3 +
     opts.numSub * 3 +
     opts.numDest * 2;
-  console.log(totSpaceAvail);
-  console.log(totShipSpace);
+
+
   return totSpaceAvail * 0.6 > totShipSpace;
 };

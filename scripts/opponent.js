@@ -114,19 +114,10 @@ class Opponent {
         */
 
         //Move the last tile hit to unresolved (but has been guessed, and try again).
-        if (this.hitTiles.length === 1) {
-          //We've exhausted all posibilities at this point. This tile needs to be removed
-          this.hitTiles = [];
-          this.hitTiles.length = 0;
 
-          this.hitTiles = this.unresolvedTiles.reverse(); //Try with the unresolved tiles
+        //Try without the last hit tile.
+        this.unresolvedTiles.push(this.hitTiles.pop());
 
-          this.unresolvedTiles = [];
-          this.unresolvedTiles.length = 0;
-        } else {
-          //Try without the last hit tile.
-          this.unresolvedTiles.push(this.hitTiles.pop());
-        }
         return this.pickNearHits(); //Try again
       }
 
@@ -148,6 +139,17 @@ class Opponent {
       guess = this.a1Tiles[getA1([x - 1, y - 1])];
       if (guess && !guess.guessed) {
         return guess;
+      }
+
+      if (this.hitTiles.length === 1) {
+        //We've exhausted all posibilities at this point. This tile needs to be removed
+        this.hitTiles = [];
+        this.hitTiles.length = 0;
+
+        this.hitTiles = this.unresolvedTiles.reverse(); //Try with the unresolved tiles
+
+        this.unresolvedTiles = [];
+        this.unresolvedTiles.length = 0;
       }
 
       guess = undefined;
