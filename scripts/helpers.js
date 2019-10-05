@@ -115,3 +115,4 @@ const enoughSpace = function(opts) {
 
   return totSpaceAvail * 0.6 > totShipSpace;
 };
+

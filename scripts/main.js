@@ -295,7 +295,7 @@ const opponentTilePressed = function(a1) {
       highlightOpponentBoard();
       checkOpponentMoves(SHOTS_PER_TURN);
       if (gameState === "gameover") {
-        return;  //Don't log any more, game is over, opponent won
+        return;  //Don't log any more, game is over, opponent worn
       }
       let numShotsLeft = SHOTS_PER_TURN - shotsSoFar;
       log(`Your turn! Take another shot, you have ${numShotsLeft} shot${numShotsLeft > 1 ? "s" : ""} left this turn.`);
