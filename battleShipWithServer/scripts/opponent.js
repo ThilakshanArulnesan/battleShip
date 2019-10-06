@@ -28,6 +28,7 @@ class Opponent {
           url: this.HOST,
           type: "GET",
           success: function(result) {
+            //return the guessed value
             resolve(result);
           },
           error: function(error) {
@@ -242,9 +243,25 @@ const arrayOf = function(obj) {
   return arr;
 }
 
+const promisifiedOpponentShips = function() {
+  //Places the opponent ships.
+  return new Promise((res, rej) => {
+    if (this.human) {
+      //should return ships
+    } else {
+      setTimeout(() => {
+        placeOpponentShipAI();
+        console.log("placed ships");
+        res();
+      }, 10000);
+    }
 
+  });
 
-const placeOpponentShip = function() {
+}
+
+const placeOpponentShipAI = function() {
+
   /*
   Pick random locations and place the ships there. Always verify that it is possible to place the tile, if not try again. It should always be possible for the AI to place all the ships as we checked to ensure that the number of tiles the ships will take is less than 60% of the available board space.
   */
@@ -291,6 +308,7 @@ const placeOpponentShip = function() {
   }
 
   displayTiles();
+  console.log("done placing ships");
 }
 
 

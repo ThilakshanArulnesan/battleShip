@@ -36,17 +36,38 @@ const startGame = function(opts) {
   loadGameScreen();
 
   //Get options:
-  PLAYER_NAME = opts.username;
-  GAME_SIZE = opts.boardSize;
-  SHOTS_PER_TURN = opts.numShots;
-  let diff = opts.difficulty;
+  let numCarrier;
+  let numBattle;
+  let numCruiser;
+  let numSub;
+  let numDest;
+  let diff
 
-  let numCarrier = opts.numCarrier;
-  let numBattle = opts.numBattle;
-  let numCruiser = opts.numCruiser;
-  let numSub = opts.numSub;
-  let numDest = opts.numDest;
-  NUM_SHIPS = numCarrier + numBattle + numCruiser + numSub + numDest;
+  if (false) {//HUMAN GAME, check later
+    GAME_SIZE = 10;
+    SHOTS_PER_TURN = 1;
+    diff = 2;//IRRELEVANT
+    numCarrier = 1;
+    numBattle = 1;
+    numCruiser = 1;
+    numSub = 1;
+    numDest = 1;
+    NUM_SHIPS = 5;
+
+  } else {
+
+    PLAYER_NAME = opts.username;
+    GAME_SIZE = opts.boardSize;
+    SHOTS_PER_TURN = opts.numShots;
+    diff = opts.difficulty;
+
+    numCarrier = opts.numCarrier;
+    numBattle = opts.numBattle;
+    numCruiser = opts.numCruiser;
+    numSub = opts.numSub;
+    numDest = opts.numDest;
+    NUM_SHIPS = numCarrier + numBattle + numCruiser + numSub + numDest;
+  }
 
   clearBoard();
   clearLog();
@@ -58,23 +79,20 @@ const startGame = function(opts) {
   //Could look into seperating this functionality out
   playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
   opponentTiles = generateEmptyBoard(GAME_SIZE, "opponentBoard");
-  myOpponent = new Opponent(playerTiles, diff);
-  //Load ship types:
+  myOpponent = new Opponent(playerTiles, diff, false); //human opponent
 
+  //Load ship types:
   addShip("Carrier [5]", 5, numCarrier);
   addShip("Battleship [4]", 4, numBattle);
   addShip("Cruiser [3]", 3, numCruiser);
   addShip("Submarine [3]", 3, numSub);
   addShip("Destroyer [2]", 2, numDest);
-  /*
-    playerShips.push(new Ship("Carrier[5]", 5, "v", "player"));
-    opponentShips.push(new Ship("Carrier[5]", 5, "v", "opponent"));
-    */
 
-  //opponentShips[1].isSunk = true;
+
   gameState = "setup";
 
-  placeOpponentShip();
+  //Make a request to start the game
+
   trackShips();
 
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
@@ -174,29 +192,40 @@ const okayPressed = function() {
       displayTiles();
 
       if (playerShipsPlaced === NUM_SHIPS) {
-        log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        log("Let's begin!!");
-
-        gameState = "playing";
-        //Randomize who goes first
-        if (Math.random() > 0.5) { //flip a coin
-          log("We flipped a coin and you lost :(. Opponent went first.");
-          isPlayerTurn = false;
-
-          highlightPlayerBoard();
-          log("Waiting for opponent...")
-          checkOpponentMoves(SHOTS_PER_TURN);//Opponent moves
-          displayTiles();
-          isPlayerTurn = true;
-          highlightOpponentBoard();
-        } else {
-          log("We flipped a coin, and you get to go first! Please pick a location");
-          highlightOpponentBoard();
-        }
-
         $("#okButton").hide();
+        isWaiting = true;//no actions until response is heard
+
+        log(`Searching for opponent, please wait...`);
+        let promisedPlaceShips = promisifiedOpponentShips();
+
+        promisedPlaceShips.then(() => {
+          log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+          log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+          log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+          log("Let's begin!!");
+          isWaiting = false;
+          gameState = "playing";
+
+          //Randomize who goes first
+          if (Math.random() > 0.5) { //Server flips coin
+            log("We flipped a coin and you lost :(. Opponent went first.");
+            isPlayerTurn = false;
+
+            highlightPlayerBoard();
+            log("Waiting for opponent...")
+            checkOpponentMoves(SHOTS_PER_TURN);//Opponent moves
+            displayTiles();
+            isPlayerTurn = true;
+            highlightOpponentBoard();
+          } else {
+            log("We flipped a coin, and you get to go first! Please pick a location");
+            highlightOpponentBoard();
+          }
+        })
+
+
+
+
 
       } else {
         log(`Great! Now please select where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
@@ -375,7 +404,7 @@ const checkOpponentMoves = function(numMoves) {
   tasks.forEach(task => {
     result = result.then(() => task());
   });
-  console.log(result);
+
   return result;
   /*
     return new Promise((res, rej) => {
