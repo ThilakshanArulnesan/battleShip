@@ -2,6 +2,7 @@ class Opponent {
   constructor(playerTiles, diff, hum = false) {
     this.activeTiles = arrayOf(playerTiles); //An array of the tiles, AI cannot read the properties of the tiles (that would be cheating!)
     this.human = hum;
+    console.log("set human to " + this.human + hum);
     this.a1Tiles = playerTiles;
 
     this.hitTiles = undefined;
@@ -10,7 +11,7 @@ class Opponent {
     this.hitTiles = []; //Could be useful for a smarter AI
     this.missTiles = []; //Could be useful for a smarter AI
     this.unresolvedTiles = [];
-    this.HOST = "localhost:8080"
+    this.HOST = "http://localhost:3000"
 
     //Pop out elements as used
   }
@@ -243,11 +244,100 @@ const arrayOf = function(obj) {
   return arr;
 }
 
-const promisifiedOpponentShips = function() {
+const promisifiedOpponentShips = function(playerShips = null) {
   //Places the opponent ships.
   return new Promise((res, rej) => {
-    if (this.human) {
-      //should return ships
+    console.log("human? " + this.human);
+    if (myOpponent.human) {
+      //should place  ships
+      let car = [];
+      let bat = [];
+      let cru = [];
+      let sub = [];
+      let des = [];
+
+      for (let ship of playerShips) {
+        if (ship.type === "car") {
+          for (let tile of ship.tiles) {
+            car.push(tile.a1());
+          }
+        }
+        else if (ship.type === "bat") {
+          for (let tile of ship.tiles) {
+            bat.push(tile.a1());
+          }
+        }
+        else if (ship.type === "cru") {
+          for (let tile of ship.tiles) {
+            cru.push(tile.a1());
+          }
+        }
+        else if (ship.type === "sub") {
+          for (let tile of ship.tiles) {
+            sub.push(tile.a1());
+          }
+        }
+        else if (ship.type === "des") {
+          for (let tile of ship.tiles) {
+            des.push(tile.a1());
+          }
+        }
+
+      }
+
+
+      let req = {
+        car,
+        bat,
+        cru,
+        sub,
+        des
+      }
+      //Create a request
+
+      $.post(myOpponent.HOST + "/games", req, function(res) {
+
+        //Push the tiles into the relevant ship
+        console.log(res);
+
+        //Set the tiles state to "a"
+        for (let key in res) {
+          res[key] = res[key].map(e => {
+            //Find the opponent tile with that A1 notation
+            let opTile = opponentTiles[e].state = "a";
+            return opTile;
+          });
+
+          for (let ship of opponentShips) {
+            if (ship.type === key && ship.tiles.length === 0) {
+              ship.tiles = res[key];
+              break;
+            }
+          }
+        }
+
+        console.log("after map: ");
+        console.log(res);
+
+        console.log("Ships: ");
+        console.log(opponentShips);
+        displayTiles();
+        //increment opponent ships placed
+        //display tiles
+
+
+        console.log("GOT A RESPONSE!!")
+
+      },
+      );
+
+
+      //If the server says game is ready, we can return the promise
+
+
+      //Keep checking the server until the game is ready
+
+
     } else {
       setTimeout(() => {
         placeOpponentShipAI();

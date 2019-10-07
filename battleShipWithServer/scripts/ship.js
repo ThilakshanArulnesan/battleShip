@@ -1,7 +1,8 @@
 class Ship {
-  constructor(type, size, orientation, owner) {
+  constructor(desc, size, orientation, owner, type) {
     //Ship constructor
     this.owner = owner;
+    this.desc = desc;
     this.type = type;
     this.size = size;
     this.orientation = orientation;

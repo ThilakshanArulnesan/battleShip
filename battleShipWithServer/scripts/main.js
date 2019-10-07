@@ -43,7 +43,7 @@ const startGame = function(opts) {
   let numDest;
   let diff
 
-  if (false) {//HUMAN GAME, check later
+  if (true) {//HUMAN GAME, check later
     GAME_SIZE = 10;
     SHOTS_PER_TURN = 1;
     diff = 2;//IRRELEVANT
@@ -79,31 +79,30 @@ const startGame = function(opts) {
   //Could look into seperating this functionality out
   playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
   opponentTiles = generateEmptyBoard(GAME_SIZE, "opponentBoard");
-  myOpponent = new Opponent(playerTiles, diff, false); //human opponent
+  myOpponent = new Opponent(playerTiles, diff, true); //human opponent
 
   //Load ship types:
-  addShip("Carrier [5]", 5, numCarrier);
-  addShip("Battleship [4]", 4, numBattle);
-  addShip("Cruiser [3]", 3, numCruiser);
-  addShip("Submarine [3]", 3, numSub);
-  addShip("Destroyer [2]", 2, numDest);
+  addShip("Carrier [5]", 5, numCarrier, "car");
+  addShip("Battleship [4]", 4, numBattle, "bat");
+  addShip("Cruiser [3]", 3, numCruiser, "cru");
+  addShip("Submarine [3]", 3, numSub, "sub");
+  addShip("Destroyer [2]", 2, numDest, "des");
 
 
   gameState = "setup";
 
   //Make a request to start the game
-
   trackShips();
 
-  log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
+  log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].desc} (${playerShips[playerShipsPlaced].size} spaces)...`);
   highlightPlayerBoard();
 
 };
 
-const addShip = function(name, size, number) {
+const addShip = function(name, size, number, type) {
   for (let i = 0; i < number; i++) {
-    playerShips.push(new Ship(name, size, "h", "player"));
-    opponentShips.push(new Ship(name, size, "h", "opponent"));
+    playerShips.push(new Ship(name, size, "h", "player", type));
+    opponentShips.push(new Ship(name, size, "h", "opponent", type));
   }
 
 }
@@ -196,7 +195,7 @@ const okayPressed = function() {
         isWaiting = true;//no actions until response is heard
 
         log(`Searching for opponent, please wait...`);
-        let promisedPlaceShips = promisifiedOpponentShips();
+        let promisedPlaceShips = promisifiedOpponentShips(playerShips);
 
         promisedPlaceShips.then(() => {
           log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -486,19 +485,19 @@ const trackShips = function() {
   $(`ul`).empty();
 
   for (let ship of playerShips) {
-    //tmpText += "<ul>" + ship.type;
+    //tmpText += "<ul>" + ship.desc;
     if (ship.isSunk) {
-      $(`#playerTracker ul`).append(`<li><strike>${ship.type}<strike></li>`);
+      $(`#playerTracker ul`).append(`<li><strike>${ship.desc}<strike></li>`);
     } else {
-      $(`#playerTracker ul`).append(`<li>${ship.type}</li>`);
+      $(`#playerTracker ul`).append(`<li>${ship.desc}</li>`);
     }
   }
 
   for (let ship of opponentShips) {
     if (ship.isSunk) {
-      $(`#opponentTracker ul`).append(`<li><strike>${ship.type}<strike></li>`);
+      $(`#opponentTracker ul`).append(`<li><strike>${ship.desc}<strike></li>`);
     } else {
-      $(`#opponentTracker ul`).append(`<li>${ship.type}</li>`);
+      $(`#opponentTracker ul`).append(`<li>${ship.desc}</li>`);
     }
   }
 
