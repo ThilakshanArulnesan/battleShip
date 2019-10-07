@@ -4,17 +4,21 @@ class Opponent {
     this.human = hum;
     console.log("set human to " + this.human + hum);
     this.a1Tiles = playerTiles;
+    this.multiPlayerID = undefined;
 
     this.hitTiles = undefined;
     this.missTiles = undefined;
     this.difficulty = diff;
     this.hitTiles = []; //Could be useful for a smarter AI
     this.missTiles = []; //Could be useful for a smarter AI
+
+
     this.unresolvedTiles = [];
-    this.HOST = "http://localhost:3000"
+    //this.HOST = "http://localhost:3000"
 
     //Pop out elements as used
   }
+
 
   get numTiles() {
     return this.activeTiles.length;
@@ -25,7 +29,7 @@ class Opponent {
       if (this.human) {
         //Make get requests for the moves instead
         //Will get AI notation.
-        $.get(myOpponent.HOST + "/games/1/moves/next", function(resp) {
+        $.get(`${HOST}/games/1/moves/${this.multiPlayerID}`, function(resp) {
           console.log(resp.move);
           resolve(playerTiles[resp.move]);
         });
@@ -288,28 +292,30 @@ const promisifiedOpponentShips = function(playerShips = null) {
       }
       //Create a request
 
-      $.post(myOpponent.HOST + "/games", req, function(resp) {
+      $.post(`${HOST}/games`, req, function(resp) {
 
         //Push the tiles into the relevant ship res
         console.log(resp);
 
         //Set the tiles state to "a"
         for (let key in resp) {
-          if (key === "first") continue;
+          if (key === "first" || key === "id") continue;
           resp[key] = resp[key].map(e => {
             //Find the opponent tile with that A1 notation
-            let opTile = opponentTiles[e].state = "a";
-            return opTile;
+            opponentTiles[e].state = "a";
+            return opponentTiles[e];
           });
 
           for (let ship of opponentShips) {
             if (ship.type === key && ship.tiles.length === 0) {
               ship.tiles = resp[key];
+
+              resp[key].forEach(e => e.ship = ship);
               break;
             }
           }
         }
-
+        myOpponent.multiPlayerID = resp.id; //For future get requests
         console.log("after map: ");
         console.log(resp);
 
@@ -318,19 +324,10 @@ const promisifiedOpponentShips = function(playerShips = null) {
         displayTiles();
         //increment opponent ships placed
         //display tiles
-
-
         console.log("GOT A RESPONSE!!")
         res(resp.first);
       },
       );
-
-
-      //If the server says game is ready, we can return the promise
-
-
-      //Keep checking the server until the game is ready
-
 
     } else {
       setTimeout(() => {

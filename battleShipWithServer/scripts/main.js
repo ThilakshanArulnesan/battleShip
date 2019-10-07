@@ -12,8 +12,8 @@ let activeCell;
 
 let playerTiles;
 let opponentTiles;
+let multiPlayerID = undefined; //Either p1 or p2;
 
-let isPlayerTurn;
 
 let GAME_SIZE = 10;
 const TICK_RATE = 500;//num of milliseconds before another move can  be made
@@ -210,15 +210,15 @@ const okayPressed = function() {
           }
           //Randomize who goes first
           if (!first) { //Server flips coin
-            log("We flipped a coin and you lost :(. Opponent went first.");
-            isPlayerTurn = false;
+            log("We flipped a coin and you lost :(. Your opponent is first.");
+            isWaiting = true;
 
             highlightPlayerBoard();
             log("Waiting for opponent...")
             let thePromisedMove = checkOpponentMoves(SHOTS_PER_TURN);//Opponent moves
             thePromisedMove.then(() => {
               displayTiles();
-              isPlayerTurn = true;
+              isWaiting = false;
               highlightOpponentBoard();
             });
           } else {
@@ -312,9 +312,7 @@ const opponentTilePressed = function(a1) {
 
     isWaiting = true;
 
-    $.post(HOST + "/games/1/moves", { move: chosenTile.a1() }, () => {
-      setTimeout(() => isWaiting = false, 6000);
-    })
+    $.post(`${HOST}/games/1/moves/${myOpponent.multiPlayerID}`, { move: chosenTile.a1() })
 
 
     //Check if all opponent ships are sunk (Gameover state)

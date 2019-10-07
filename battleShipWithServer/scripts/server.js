@@ -33,20 +33,23 @@ app.post("/games", (req, res) => {
   //Creates a new game:
   let bod = req.body;
   numConnected++;
-  if (numConnected === 2) { //AI mode
+  if (numConnected === 2) {
     console.log("Player 2 has connected");
     console.log("Their ship positions are: ")
     console.log(bod);
+
     playersConnected = true; //Don't need to wait for another player if against AI
     p2Ships = bod;
     p2Ships.first = coinFlip >= 0.5;
+    p2Ships.id = "p1"; //Player 1 is sent p2 ships
     res.send(p1Ships);
   } else {
     coinFlip = Math.random();
     console.log("Player 1 has connected");
     console.log("Their ship positions are: ")
-    console.log(bod);
+
     p1Ships = bod;
+    p1Ships.id = "p2"; //P2 is sent player 1 ships
     p1Ships.first = coinFlip < 0.5;
   }
 
@@ -67,32 +70,74 @@ app.post("/games", (req, res) => {
 Assume 10x10
 assume carrier,battleship,cruiser,destroyer
 */
-let move;
-app.get("/games/1/moves/next", (req, res) => {
-  console.log("Client is requesting a move...");
-  if (move) {
-    console.log("move ready, here it is");
-    console.log({ move });
-    res.send({ move });
+let p1Move;
+let p2Move;
+app.get("/games/1/moves/:id", (req, res) => {
+  let id = req.params.id;
+
+
+  console.log(`Player ${id} is requesting a move...`);
+  if (id === "p1") {
+    if (p2Move) {
+      console.log("move ready, here it is");
+      console.log({ p2Move });
+      res.send({ p2Move });
+    } else {
+      let s = setInterval(() => {
+        if (p2Move) {
+          console.log("sending this to client");
+          console.log({ move: p2Move });
+          clearInterval(s);
+          res.send({ move: p2Move });
+          p2Move = undefined;
+          return;
+        } else {
+          console.log(`Player ${id} is still waiting for a move...`)
+        }
+      }, 1000);//checks every 5 seconds
+    }
   } else {
-    setInterval(() => {
-      if (move) {
-        console.log("sending this to client");
-        console.log({ move });
-        res.send({ move });
-        move = undefined;
-        clearInterval();
-        return;
-      }
-    }, 5000);//checks every 5 seconds
+    if (p1Move) {
+      console.log("move ready, here it is");
+      console.log({ p1Move });
+      res.send({ p1Move });
+    } else {
+      let s = setInterval(() => {
+        if (p1Move) {
+          console.log("sending this to client");
+          console.log({ move: p1Move });
+          res.send({ move: p1Move });
+          p1Move = undefined;
+          clearInterval(s);
+          return;
+        } else {
+          console.log(`Player ${id} is still waiting for a move...`)
+        }
+      }, 1000);//checks every 5 seconds
+    }
+
+
   }
+
+
 });
 
-app.post("/games/1/moves", (req, res) => {
+app.post("/games/1/moves/:id", (req, res) => {
   let bod = req.body;
-  console.log("Client has sent a move :", bod);
+  let id = req.params.id;
 
-  if (move) { //Wait for previous get request to resolve first.
+  if (id === "p1") {
+    p1Move = bod.move;
+  } else {
+    p2Move = bod.move;
+  }
+
+  console.log(`Player ${id} has sent a move :`, bod);
+  console.log(`P1 move is  :`, p1Move);
+  console.log(`P2 move is :`, p2Move);
+  res.send("OK");
+  /*
+  if (move && move.move) { //Wait for previous get request to resolve first.
     setInterval(() => {
       if (!move) {
         move = bod.move;
@@ -105,6 +150,7 @@ app.post("/games/1/moves", (req, res) => {
     move = bod.move;
     res.send("OK");
   }
+  */
 });
 
 
