@@ -4,7 +4,7 @@ TODO:
 - Work on stretch stuff
 - Hide opponent ships
 */
-const HOST = "localhost:8080"
+const HOST = "http://localhost:3000"
 
 let isWaiting = false;
 let gameState = "Not Started";
@@ -197,35 +197,35 @@ const okayPressed = function() {
         log(`Searching for opponent, please wait...`);
         let promisedPlaceShips = promisifiedOpponentShips(playerShips);
 
-        promisedPlaceShips.then(() => {
+        promisedPlaceShips.then((first) => {
           log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
           log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
           log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
           log("Let's begin!!");
+          console.log(`${first ? "I am first" : "I am second"}`);
           isWaiting = false;
           gameState = "playing";
-
+          if (first === undefined) {
+            first = Math.random() > 0.5;
+          }
           //Randomize who goes first
-          if (Math.random() > 0.5) { //Server flips coin
+          if (!first) { //Server flips coin
             log("We flipped a coin and you lost :(. Opponent went first.");
             isPlayerTurn = false;
 
             highlightPlayerBoard();
             log("Waiting for opponent...")
-            checkOpponentMoves(SHOTS_PER_TURN);//Opponent moves
-            displayTiles();
-            isPlayerTurn = true;
-            highlightOpponentBoard();
+            let thePromisedMove = checkOpponentMoves(SHOTS_PER_TURN);//Opponent moves
+            thePromisedMove.then(() => {
+              displayTiles();
+              isPlayerTurn = true;
+              highlightOpponentBoard();
+            });
           } else {
             log("We flipped a coin, and you get to go first! Please pick a location");
             highlightOpponentBoard();
           }
         })
-
-
-
-
-
       } else {
         log(`Great! Now please select where you'd like to place your ${playerShips[playerShipsPlaced].type} (${playerShips[playerShipsPlaced].size} spaces)...`);
       }
@@ -309,6 +309,13 @@ const opponentTilePressed = function(a1) {
 
     displayTiles();
     shotsSoFar++;
+
+    isWaiting = true;
+
+    $.post(HOST + "/games/1/moves", { move: chosenTile.a1() }, () => {
+      setTimeout(() => isWaiting = false, 6000);
+    })
+
 
     //Check if all opponent ships are sunk (Gameover state)
     if (allShipsSunk(opponentShips)) {

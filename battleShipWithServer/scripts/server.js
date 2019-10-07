@@ -27,10 +27,11 @@ app.use(function(req, res, next) {
 
 let p1Ships = {}; //First player to connect
 let p2Ships = {}; //Second person to connect
+let coinFlip;
+let started = false;
 app.post("/games", (req, res) => {
   //Creates a new game:
   let bod = req.body;
-
   numConnected++;
   if (numConnected === 2) { //AI mode
     console.log("Player 2 has connected");
@@ -38,18 +39,22 @@ app.post("/games", (req, res) => {
     console.log(bod);
     playersConnected = true; //Don't need to wait for another player if against AI
     p2Ships = bod;
+    p2Ships.first = coinFlip >= 0.5;
     res.send(p1Ships);
   } else {
+    coinFlip = Math.random();
     console.log("Player 1 has connected");
     console.log("Their ship positions are: ")
     console.log(bod);
     p1Ships = bod;
+    p1Ships.first = coinFlip < 0.5;
   }
 
 
   setInterval(() => {
-    if (playersConnected) {
+    if (playersConnected && !started) {
       res.send(p2Ships);
+      started = true;
       clearInterval();
       return;
     }
@@ -62,6 +67,47 @@ app.post("/games", (req, res) => {
 Assume 10x10
 assume carrier,battleship,cruiser,destroyer
 */
+let move;
+app.get("/games/1/moves/next", (req, res) => {
+  console.log("Client is requesting a move...");
+  if (move) {
+    console.log("move ready, here it is");
+    console.log({ move });
+    res.send({ move });
+  } else {
+    setInterval(() => {
+      if (move) {
+        console.log("sending this to client");
+        console.log({ move });
+        res.send({ move });
+        move = undefined;
+        clearInterval();
+        return;
+      }
+    }, 5000);//checks every 5 seconds
+  }
+});
+
+app.post("/games/1/moves", (req, res) => {
+  let bod = req.body;
+  console.log("Client has sent a move :", bod);
+
+  if (move) { //Wait for previous get request to resolve first.
+    setInterval(() => {
+      if (!move) {
+        move = bod.move;
+        res.send("OK");
+        clearInterval();
+        return;
+      }
+    }, 5000);//checks every 5 seconds
+  } else {
+    move = bod.move;
+    res.send("OK");
+  }
+});
+
+
 
 app.post("/games/1", (req, res) => {
   //If two players are ready start

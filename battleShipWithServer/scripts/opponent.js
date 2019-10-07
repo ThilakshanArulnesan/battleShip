@@ -25,23 +25,16 @@ class Opponent {
       if (this.human) {
         //Make get requests for the moves instead
         //Will get AI notation.
-        $.ajax({
-          url: this.HOST,
-          type: "GET",
-          success: function(result) {
-            //return the guessed value
-            resolve(result);
-          },
-          error: function(error) {
-            reject(error);
-          }
+        $.get(myOpponent.HOST + "/games/1/moves/next", function(resp) {
+          console.log(resp.move);
+          resolve(playerTiles[resp.move]);
         });
+
       } else if (this.difficulty === 2) {
         setTimeout(() => {
           console.log("Done waiting");
           resolve(this.pickNearHits());
-        }, 10000);
-
+        }, 100);
 
       } else {
         resolve(this.pickRandom());
@@ -295,14 +288,15 @@ const promisifiedOpponentShips = function(playerShips = null) {
       }
       //Create a request
 
-      $.post(myOpponent.HOST + "/games", req, function(res) {
+      $.post(myOpponent.HOST + "/games", req, function(resp) {
 
-        //Push the tiles into the relevant ship
-        console.log(res);
+        //Push the tiles into the relevant ship res
+        console.log(resp);
 
         //Set the tiles state to "a"
-        for (let key in res) {
-          res[key] = res[key].map(e => {
+        for (let key in resp) {
+          if (key === "first") continue;
+          resp[key] = resp[key].map(e => {
             //Find the opponent tile with that A1 notation
             let opTile = opponentTiles[e].state = "a";
             return opTile;
@@ -310,14 +304,14 @@ const promisifiedOpponentShips = function(playerShips = null) {
 
           for (let ship of opponentShips) {
             if (ship.type === key && ship.tiles.length === 0) {
-              ship.tiles = res[key];
+              ship.tiles = resp[key];
               break;
             }
           }
         }
 
         console.log("after map: ");
-        console.log(res);
+        console.log(resp);
 
         console.log("Ships: ");
         console.log(opponentShips);
@@ -327,7 +321,7 @@ const promisifiedOpponentShips = function(playerShips = null) {
 
 
         console.log("GOT A RESPONSE!!")
-
+        res(resp.first);
       },
       );
 
