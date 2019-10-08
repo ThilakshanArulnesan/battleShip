@@ -12,22 +12,22 @@ Rules for battleship are found [here](https://www.cs.nmsu.edu/~bdu/TA/487/brules
 - Multiplayer mode currently only supports two clients at a time that can connect to a common server. 
 
 ## Options
-[Options](doc/options.png)
+![Options](doc/options.png)
 - In the options screen you can select your username and select the number of each type of ship, the number of moves per turn, the difficulty of the AI (or select online mode)
 
 
 ## Placement phase
 During this phase of the game you are placing your ships. The order of ship placement is in a pre-defined order from largest ship to smallest. 
 
-[clickcell](doc/clickcell.png)
+![clickcell](doc/clickcell.png)
 
 Click on a tile to place a ship that starts on that tile. Ships will either be placed vertically with the user-selected tile at the top or horizontally with the user selected tile on the left. You will not be able to place a tile if the ship is too large to fit either vertically or horizontally. 
 
-[click again](doc/clickagain.png)
+![click again](doc/clickagain.png)
 
 Click the same tile again to rotate it (if it is possible to rotate). At any time before locking you may change your selection by clicking on another tile. 
 
-[Press okay](doc/okaypressed.png)
+![Press okay](doc/okaypressed.png)
 
 Press the lock button to lock that ships placement, the color will change. Continue placing ships until all the ships have been exhausted.
 
@@ -40,7 +40,7 @@ Easy mode: In easy mode the AI will randomly guess tiles (never repeating guesse
 Hard mode: In hard mode the AI will guess every other tile in a checkerboard pattern. After hitting, it will search around the hit for another hit. It will then proceed in a straight line to try and destroy the battleship. If a ship is not destroyed using the strategy, the AI will assume there are multiple ships in the area and will backtrack moves and try to destroy every ship in the region. 
 
 ## Scoring
-[leaderboard](doc/leaderboard.png)
+![leaderboard](doc/leaderboard.png)
 
 The local highscore is being tracked (tied to the browser) using the username provided in the options screen. The score is calculated as follows: (Number of enemy ship pieces destroyed) - (Number of player ship pieces left). If a score is negative (i.e. the player lost the game) a score of zero will be assigned instead. Note: If you would like an accurate leaderboard keep the number of ships and boardsize constant (otherwise there is a potential of scoring more points when there are more ships).
 
