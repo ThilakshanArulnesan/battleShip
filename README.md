@@ -16,7 +16,7 @@ Rules for battleship are found [here](https://www.cs.nmsu.edu/~bdu/TA/487/brules
 - In the options screen you can select your username and select the number of each type of ship, the number of moves per turn, the difficulty of the AI (or select online mode)
 
 
-### Placement phase
+## Placement phase
 During this phase of the game you are placing your ships. The order of ship placement is in a pre-defined order from largest ship to smallest. 
 
 [clickcell](doc/clickcell.png)
@@ -31,15 +31,20 @@ Click the same tile again to rotate it (if it is possible to rotate). At any tim
 
 Press the lock button to lock that ships placement, the color will change. Continue placing ships until all the ships have been exhausted.
 
-### Playing phase
+## Playing phase
 Select a square on the opponents board to be able to make a guess. The console will display whether there was a hit or miss and a visual indicator will show any tiles that have already been selected. The AI will make a move immediately after any player move. The game is over once all ships have been sunk.
 
+## AI Explanation
+Easy mode: In easy mode the AI will randomly guess tiles (never repeating guesses already made)
+
+Hard mode: In hard mode the AI will guess every other tile in a checkerboard pattern. After hitting, it will search around the hit for another hit. It will then proceed in a straight line to try and destroy the battleship. If a ship is not destroyed using the strategy, the AI will assume there are multiple ships in the area and will backtrack moves and try to destroy every ship in the region. 
+
 ## Scoring
-[leaderboard](docs/leaderbaord)
+[leaderboard](doc/leaderboard.png)
 
-The local highscore is being tracked (tied to the browser) using the username provided in the options screen. The score is calculated as follows: (Number of enemy ship pieces detroyed) - (Number of player ship pieces left). If a score is negative (i.e. the player lost the game) a score of zero will be assigned instead. Note: If you would like an accurate leaderboard keep the number of ships and boardsize constant (otherwise there is a potential of scoring more points when there are more ships).
+The local highscore is being tracked (tied to the browser) using the username provided in the options screen. The score is calculated as follows: (Number of enemy ship pieces destroyed) - (Number of player ship pieces left). If a score is negative (i.e. the player lost the game) a score of zero will be assigned instead. Note: If you would like an accurate leaderboard keep the number of ships and boardsize constant (otherwise there is a potential of scoring more points when there are more ships).
 
-## Dependecies
+## Dependencies
 - JQuery (imported using CDN)
 - Bootstrap (for styling)
 
@@ -53,4 +58,4 @@ The local highscore is being tracked (tied to the browser) using the username pr
 - Support more players for multiplayer mode
 - Save accounts
 - Revamped scoring system that involves time played against AI
-- Server-side, persistant database for highscores (currently only local high-scores against AI is enabled)
+- Server-side, persistent database for highscores (currently only local high-scores against AI is enabled)
