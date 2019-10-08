@@ -1,8 +1,7 @@
 class Opponent {
-  constructor(playerTiles, diff, hum = false) {
+  constructor(playerTiles, diff) {
     this.activeTiles = arrayOf(playerTiles); //An array of the tiles, AI cannot read the properties of the tiles (that would be cheating!)
-    this.human = hum;
-    console.log("set human to " + this.human + hum);
+
     this.a1Tiles = playerTiles;
     this.multiPlayerID = undefined;
 
@@ -26,20 +25,17 @@ class Opponent {
 
   getMove() { //decides on the strategy to use and then makes the move
     return new Promise((resolve, reject) => {
-      if (this.human) {
+      if (this.difficulty === 3) {
+
         //Make get requests for the moves instead
         //Will get AI notation.
         $.get(`${HOST}/games/1/moves/${this.multiPlayerID}`, function(resp) {
-          console.log(resp.move);
+
           resolve(playerTiles[resp.move]);
         });
 
       } else if (this.difficulty === 2) {
-        setTimeout(() => {
-          console.log("Done waiting");
-          resolve(this.pickNearHits());
-        }, 100);
-
+        resolve(this.pickNearHits());
       } else {
         resolve(this.pickRandom());
       }
@@ -92,7 +88,7 @@ class Opponent {
       let x = lastTileFound.x;
       let y = lastTileFound.y;
 
-      console.log("Tryiing to guess smart");
+
       //Try around the tile
       //ONLY TRY 4 CASES! No reason try all 8...
       let guess;
@@ -103,7 +99,7 @@ class Opponent {
         let ydir = this.hitTiles[this.hitTiles.length - 1].y - this.hitTiles[this.hitTiles.length - 2].y;
 
         if (ydir !== 0) { //Move along vertically
-          console.log(`${xdir}, ${ydir} : I am guessing to change y`);
+
           guess = this.a1Tiles[getA1([x, y + ydir])];
           if (guess && !guess.guessed) {
             return guess;
@@ -112,7 +108,7 @@ class Opponent {
 
           let backTracky = this.hitTiles[0].y;
 
-          console.log(`${xdir}, ${ydir} : I had already guessed that, let's try backtracking to ${x},${backTracky}`);
+
 
           guess = this.a1Tiles[getA1([x, backTracky - ydir])];
 
@@ -244,8 +240,8 @@ const arrayOf = function(obj) {
 const promisifiedOpponentShips = function(playerShips = null) {
   //Places the opponent ships.
   return new Promise((res, rej) => {
-    console.log("human? " + this.human);
-    if (myOpponent.human) {
+
+    if (myOpponent.difficulty === 3) { //Human opponent
       //should place  ships
       let car = [];
       let bat = [];
@@ -293,9 +289,8 @@ const promisifiedOpponentShips = function(playerShips = null) {
       //Create a request
 
       $.post(`${HOST}/games`, req, function(resp) {
-
         //Push the tiles into the relevant ship res
-        console.log(resp);
+
 
         //Set the tiles state to "a"
         for (let key in resp) {
@@ -316,25 +311,17 @@ const promisifiedOpponentShips = function(playerShips = null) {
           }
         }
         myOpponent.multiPlayerID = resp.id; //For future get requests
-        console.log("after map: ");
-        console.log(resp);
-
-        console.log("Ships: ");
-        console.log(opponentShips);
         displayTiles();
         //increment opponent ships placed
         //display tiles
-        console.log("GOT A RESPONSE!!")
+
         res(resp.first);
       },
       );
 
     } else {
-      setTimeout(() => {
-        placeOpponentShipAI();
-        console.log("placed ships");
-        res();
-      }, 10000);
+      placeOpponentShipAI();
+      res();
     }
 
   });
@@ -389,7 +376,7 @@ const placeOpponentShipAI = function() {
   }
 
   displayTiles();
-  console.log("done placing ships");
+
 }
 
 

@@ -34,9 +34,8 @@ app.post("/games", (req, res) => {
   let bod = req.body;
   numConnected++;
   if (numConnected === 2) {
-    console.log("Player 2 has connected");
-    console.log("Their ship positions are: ")
-    console.log(bod);
+
+
 
     playersConnected = true; //Don't need to wait for another player if against AI
     p2Ships = bod;

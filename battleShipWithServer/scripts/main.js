@@ -1,9 +1,4 @@
-/*
-TODO:
-- Make it look nice
-- Work on stretch stuff
-- Hide opponent ships
-*/
+
 const HOST = "http://localhost:3000"
 
 let isWaiting = false;
@@ -41,12 +36,15 @@ const startGame = function(opts) {
   let numCruiser;
   let numSub;
   let numDest;
-  let diff
+  let diff;
 
-  if (true) {//HUMAN GAME, check later
+  if (opts.difficulty === 3) {//HUMAN GAME
+
+    //Use default settings:
+    PLAYER_NAME = opts.username;
     GAME_SIZE = 10;
     SHOTS_PER_TURN = 1;
-    diff = 2;//IRRELEVANT
+    diff = 3;
     numCarrier = 1;
     numBattle = 1;
     numCruiser = 1;
@@ -79,7 +77,7 @@ const startGame = function(opts) {
   //Could look into seperating this functionality out
   playerTiles = generateEmptyBoard(GAME_SIZE, "playerBoard");
   opponentTiles = generateEmptyBoard(GAME_SIZE, "opponentBoard");
-  myOpponent = new Opponent(playerTiles, diff, true); //human opponent
+  myOpponent = new Opponent(playerTiles, diff);
 
   //Load ship types:
   addShip("Carrier [5]", 5, numCarrier, "car");
@@ -107,73 +105,6 @@ const addShip = function(name, size, number, type) {
 
 }
 
-const displayTiles = function() {
-  if (gameState === "setup") { //Setup view
-
-    for (let key in playerTiles) { //Display player info
-      let tile = playerTiles[key];
-      let a1 = tile.a1();
-      let myTile = $(`#${a1}P`);
-
-      myTile.removeClass('selectedTile');
-
-      if (tile.state === "selected") {
-        myTile.addClass('selectedTile');
-      } else if (tile.state === "a") {
-        myTile.addClass('activeShipPiece');
-      }
-    }
-
-    for (let key in opponentTiles) {//temporary for testing purposes
-      let tile = opponentTiles[key];
-      let a1 = tile.a1();
-      let myTile = $(`#${a1}O`);
-
-      myTile.removeClass('selectedTile');
-
-      if (tile.state === "selected") {
-        myTile.addClass('selectedTile');
-      } else if (tile.state === "a") {
-        myTile.addClass('activeShipPiece');
-      }
-
-      if (tile.hitState === "h") {
-        myTile.text("HIT");
-      } else if (tile.hitState === "m") {
-        myTile.text("MISS");
-      }
-    }
-
-  }
-
-  if (gameState === "playing") {
-
-    for (let key in opponentTiles) {//temporary for testing purposes
-      let tile = opponentTiles[key];
-      let a1 = tile.a1();
-      let myTile = $(`#${a1}O`);
-
-      if (tile.hitState === "h") {
-        myTile.text("HIT").addClass("hit");
-      } else if (tile.hitState === "m") {
-        myTile.text("MISS").addClass("miss");
-      }
-    }
-    for (let key in playerTiles) {//temporary for testing purposes
-      let tile = playerTiles[key];
-      let a1 = tile.a1();
-      let myTile = $(`#${a1}P`); //Show grab the relevant player tile to display
-
-      if (tile.hitState === "h") {
-        myTile.text("HIT").addClass("hit");
-      } else if (tile.hitState === "m") {
-        myTile.text("MISS").addClass("miss");
-      }
-    }
-
-  }
-};
-
 const okayPressed = function() {
   /*
   Button will only be used in the setup phase
@@ -191,7 +122,7 @@ const okayPressed = function() {
       displayTiles();
 
       if (playerShipsPlaced === NUM_SHIPS) {
-        $("#okButton").hide();
+        $("#okButton").fadeTo(20, 0);
         isWaiting = true;//no actions until response is heard
 
         log(`Searching for opponent, please wait...`);
@@ -202,7 +133,7 @@ const okayPressed = function() {
           log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
           log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
           log("Let's begin!!");
-          console.log(`${first ? "I am first" : "I am second"}`);
+
           isWaiting = false;
           gameState = "playing";
           if (first === undefined) {
@@ -312,7 +243,9 @@ const opponentTilePressed = function(a1) {
 
     isWaiting = true;
 
-    $.post(`${HOST}/games/1/moves/${myOpponent.multiPlayerID}`, { move: chosenTile.a1() })
+    if (myOpponent.difficulty === 3) {
+      $.post(`${HOST}/games/1/moves/${myOpponent.multiPlayerID}`, { move: chosenTile.a1() });
+    }
 
 
     //Check if all opponent ships are sunk (Gameover state)
@@ -326,7 +259,7 @@ const opponentTilePressed = function(a1) {
       //Make opponent moves:
       highlightPlayerBoard();
       isWaiting = true; //Lock the player from moving
-      console.log("You should be waiting " + isWaiting);
+
       let thePromisedMove = checkOpponentMoves(SHOTS_PER_TURN);
 
       thePromisedMove.then(() => {
@@ -373,14 +306,15 @@ const task = function() {
         log(`Opponent shoots at ${a1}: MISS`);
         chosenTile.hitState = 'm';
       }
-      let prevBG = $(`#${chosenTile.a1().toUpperCase()}P`).css("backgroundColor");
-      $(`#${chosenTile.a1().toUpperCase()}P`).animate({
-        "backgroundColor": 'yellow'
-      }, TICK_RATE / 3, () => {
-        $(`#${chosenTile.a1().toUpperCase()}P`).animate({
-          "backgroundColor": prevBG
-        }, TICK_RATE / 3);
-      });
+      /* OPTIONAL ANIMATION:
+       let prevBG = $(`#${chosenTile.a1().toUpperCase()}P`).css("backgroundColor");
+       $(`#${chosenTile.a1().toUpperCase()}P`).animate({
+         "backgroundColor": 'yellow'
+       }, TICK_RATE / 3, () => {
+         $(`#${chosenTile.a1().toUpperCase()}P`).animate({
+           "backgroundColor": prevBG
+         }, TICK_RATE / 3);
+       });*/
       displayTiles();
 
 
@@ -410,78 +344,7 @@ const checkOpponentMoves = function(numMoves) {
   });
 
   return result;
-  /*
-    return new Promise((res, rej) => {
-      //Loops through all moves then returns true;
 
-
-
-    });
-
-    let myPromises = [];
-    for (let j = 0; j < numMoves; j++) {
-      myPromises.push(myOpponent.getMove);
-    }
-
-    function runSerial(tasks) {
-      var result = Promise.resolve();
-      tasks.forEach(task => {
-        result = result.then(() => task());
-      });
-      return result;
-    }
-
-    while (j < numMoves) { //opponent makes a certain number of moves
-      promisedTile = myOpponent.getMove();
-
-      promisedTile.then((chosenTile) => {
-        let a1 = chosenTile.a1();
-        chosenTile.guessed = true;
-
-        if (chosenTile.state === "a") {
-          log(`Opponent shoots at ${a1}: HIT`);
-          chosenTile.state = 'd'; //Mark it as destroyed
-          chosenTile.hitState = 'h';
-
-          let isSunk = chosenTile.ship.setShipState(); //decides if ship is sunk.
-          myOpponent.getInfo(chosenTile, true, isSunk, chosenTile.ship.size);
-
-          if (chosenTile.ship.isSunk) {
-            trackShips(playerShips, opponentShips);
-            log(`Oh no! the opponent has sunk your battleship!"`);
-          }
-        } else {
-          log(`Opponent shoots at ${a1}: MISS`);
-          chosenTile.hitState = 'm';
-        }
-        let prevBG = $(`#${chosenTile.a1().toUpperCase()}P`).css("backgroundColor");
-        $(`#${chosenTile.a1().toUpperCase()}P`).animate({
-          "backgroundColor": 'yellow'
-        }, TICK_RATE / 3, () => {
-          $(`#${chosenTile.a1().toUpperCase()}P`).animate({
-            "backgroundColor": prevBG
-          }, TICK_RATE / 3);
-        });
-        displayTiles();
-
-
-        //Check if all opponent ships are sunk (Gameover state)
-        if (allShipsSunk(playerShips)) {
-          log(`The opponent has won :(. Press replay to try again`);
-          gameState = "gameover";
-          loadEndScreen(false);//load defeat
-          break;
-        }
-        j++;
-
-
-
-
-
-      }).catch(err => console.log(err));
-
-    }
-  */
 }
 
 const trackShips = function() {
@@ -492,17 +355,17 @@ const trackShips = function() {
   for (let ship of playerShips) {
     //tmpText += "<ul>" + ship.desc;
     if (ship.isSunk) {
-      $(`#playerTracker ul`).append(`<li><strike>${ship.desc}<strike></li>`);
+      $(`#playerTracker`).append(`<p><s>${ship.desc}</p></s>`);
     } else {
-      $(`#playerTracker ul`).append(`<li>${ship.desc}</li>`);
+      $(`#playerTracker`).append(`<p>${ship.desc}</p>`);
     }
   }
 
   for (let ship of opponentShips) {
     if (ship.isSunk) {
-      $(`#opponentTracker ul`).append(`<li><strike>${ship.desc}<strike></li>`);
+      $(`#opponentTracker`).append(`<s><p>${ship.desc}</p></s>`);
     } else {
-      $(`#opponentTracker ul`).append(`<li>${ship.desc}</li>`);
+      $(`#opponentTracker`).append(`<p>${ship.desc}</p>`);
     }
   }
 
