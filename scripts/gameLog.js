@@ -4,8 +4,6 @@ class GameLog {
   constructor(opts) {
     this.p1log = [];
     this.p2log = [];
-
-
     this.opts = opts;
     this.SHOTS_PER_TURN = opts.numShots;
     this.playerTiles = [];
@@ -32,12 +30,11 @@ class GameLog {
 
     loadGameScreen();
 
-    // clearBoard();
+
     clearLog();
 
     //Reset the board based on settings
     generateEmptyBoard(GAME_SIZE, "playerBoard");
-    //  console.log(playerTiles);
     generateEmptyBoard(GAME_SIZE, "opponentBoard");
 
     trackShips(this.playerShips, this.opponentShips);
@@ -69,20 +66,11 @@ class GameLog {
 
       }
     }
-
-    if (this.player) {
-      this.curMove = 1; //the player started!
-    }
-
     displayTiles("setup");
-
   };
 
   moveForward = function() {
-
-
     let chosenTile;
-
     if (Math.floor(this.curMove / this.SHOTS_PER_TURN) % 2 === 0) { //player move
       let move = this.playerMoveCounter;
       let a1 = this.p1log[move];
@@ -145,13 +133,11 @@ class GameLog {
   };
 
   moveBack = function() {
-    this.curMove--;
-
-
+    this.curMove--; //move counter down
 
     let chosenTile;
-
-    if (Math.floor(this.curMove / this.SHOTS_PER_TURN) % 2 === 0) { //player move
+    //We are checking if it is currently the players move (taking into account multiple moves per turn)
+    if (Math.floor(this.curMove / this.SHOTS_PER_TURN) % 2 === 0) { //Check if it is the players move
       this.playerMoveCounter--;
       let move = this.playerMoveCounter;
       let a1 = this.p1log[move];
@@ -196,10 +182,6 @@ class GameLog {
       }
     }
 
-  };
-
-  clearLog = function() {
-    this.log = [];
   };
 
 }

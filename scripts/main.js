@@ -143,7 +143,7 @@ const okayPressed = function() {
           if (first === undefined) {
             first = Math.random() > 0.5;
           }
-          console.log(playerTiles);
+
 
           gameLog.playerTiles = playerTiles;
           gameLog.opponentTiles = opponentTiles;
