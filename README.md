@@ -49,6 +49,7 @@ The local highscore is being tracked (tied to the browser) using the username pr
 - Bootstrap (for styling)
 
 ## Known bugs/Issues
+- During replays, the ship log is sometimes inaccurate.
 - Server will sometimes not register a move, causing both clients to be unable to make moves. A server restart and a restart of both clients is required in these instances
 - Server needs to be restarted between each game instance.
 

@@ -5,7 +5,7 @@ const loadGameScreen = function() {
     `<div class="playerArea">
   <div class="board" id="playerBoard"></div>
   <div class="tracker" id="playerTracker">
-    <ul></ul>
+
   </div>
 </div>
 
@@ -17,7 +17,7 @@ const loadGameScreen = function() {
 <div class="playerArea">
   <div class="board" id="opponentBoard"></div>
   <div class="tracker" id="opponentTracker">
-    <ul></ul>
+
   </div>
 </div>
 <textarea readonly type="text" class="console"></textarea>
@@ -30,8 +30,8 @@ const loadTitle = function() {
   //I could save the code below in a textfile... I just don't want to deal with async right now :)
   $(".gameboard").append(
     `    <div class="container">
-<h2>Welcome to battleship!</h2>
-<form class="justify-content-center" id="options">
+
+    <form class="justify-content-center" id="options">
   <div class="form-group">
     <label> Username</label>
     <input type="text" name="username" value="me">
@@ -42,6 +42,17 @@ A Cruiser, which is 3 tiles long
 A Submarine, which is 3 tiles long
 A Destroyer, which is 2 tiles long
 -->
+<div class="form-group">
+<label>Gamemode</label>
+<select name="difficulty">
+<option value="2">Hard AI</option>
+<option value="1">Easy AI</option>
+<option value="3">Online mode</option>
+</select>
+<label> Note: Online mode is always played on a 10x10 board with one of each type of ship</label>
+</div>
+
+
   <hr>
 
   <div class="form-group">
@@ -83,14 +94,7 @@ A Destroyer, which is 2 tiles long
     <input type="number" name="numShots" min="1" max="100" value="1">
   </div>
 
-  <div class="form-group">
-    <label>AI Diculty</label>
-    <select name="difficulty">
-    <option value="2">Hard</option>
-    <option value="1">Easy</option>
-</select>
 
-  </div>
 
   <input type="submit">
 </form>
@@ -153,6 +157,7 @@ const loadEndScreen = function(blnWon = true) {
     }
   }
   $(".gameboard").append(`<button id="restart" onClick="loadTitle()">Restart</button>`);
+  $(".gameboard").append(`<button id="replay" onClick="gameLog.replayGame()">Replay</button>`);
 
 
   //Display highscores (highlight player name)
@@ -160,6 +165,89 @@ const loadEndScreen = function(blnWon = true) {
 
   localStorage.setItem("highscores", writeContents);
 
+};
+
+
+const displayTiles = function(replayState = "") {
+  if (gameState === "setup" || replayState === "setup") { //Setup view
+
+    for (let key in playerTiles) { //Display player info
+      let tile = playerTiles[key];
+      let a1 = tile.a1();
+      let myTile = $(`#${a1}P`);
+
+      myTile.removeClass('selectedTile');
+
+      if (tile.state === "selected") {
+        myTile.addClass('selectedTile');
+      } else if (tile.state === "a") {
+        myTile.addClass('activeShipPiece');
+      }
+    }
+
+    if (replayState) {
+      for (let key in opponentTiles) {//temporary for testing purposes
+        let tile = opponentTiles[key];
+        let a1 = tile.a1();
+        let myTile = $(`#${a1}O`);
+
+        myTile.removeClass('selectedTile');
+
+        if (tile.state === "selected") {
+          myTile.addClass('selectedTile');
+        } else if (tile.state === "a") {
+          myTile.addClass('activeShipPiece');
+        }
+
+        if (tile.hitState === "h") {
+          myTile.text("HIT");
+        } else if (tile.hitState === "m") {
+          myTile.text("MISS");
+        }
+      }
+    }
+
+  }
+
+  if (gameState === "playing" || replayState === "playing") {
+
+    for (let key in opponentTiles) {//temporary for testing purposes
+      let tile = opponentTiles[key];
+      let a1 = tile.a1();
+      let myTile = $(`#${a1}O`);
+
+      if (tile.hitState === "h") {
+        myTile.text("HIT").addClass("hit");
+      } else if (tile.hitState === "m") {
+        myTile.text("MISS").addClass("miss");
+      }
+
+      if (replayState) {
+        if (tile.hitState === "n") {
+          myTile.text(a1).removeClass("miss").removeClass("hit");
+        }
+      }
+    }
+    for (let key in playerTiles) {//temporary for testing purposes
+      let tile = playerTiles[key];
+      let a1 = tile.a1();
+      let myTile = $(`#${a1}P`); //Show grab the relevant player tile to display
+
+      if (tile.hitState === "h") {
+        myTile.text("HIT").addClass("hit");
+      } else if (tile.hitState === "m") {
+        myTile.text("MISS").addClass("miss");
+      }
+
+      if (replayState) {
+        if (tile.hitState === "n") {
+          myTile.text(a1).removeClass("miss").removeClass("hit");
+        }
+      }
+
+    }
+
+  }
 };
 
 
@@ -181,7 +269,7 @@ const clearBoard = function() {
   setTilesProperty(playerTiles, "state", "w"); //reset player tiles
   setTilesProperty(opponentTiles, "state", "w"); //reset player tiles
   $(`.board`).empty();
-  $(`ul`).empty();
+  $(`.tracker`).empty();
   $("#okButton").show();
 
 
@@ -198,7 +286,7 @@ const clearBoard = function() {
 };
 
 const generateEmptyBoard = function(n, boardName) {
-  let p = Math.floor(100 / n) + "%"; //Percent of space to take up
+  let p = (100 - 0.1) / n + "%"; //Percent of space to take up
   let tiles = {};
   for (let j = 1; j < n + 1; j++) {
     for (let i = 0; i < n; i++) {

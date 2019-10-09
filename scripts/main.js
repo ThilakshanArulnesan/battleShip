@@ -23,6 +23,7 @@ let opponentShips = [];
 let opponentShipsPlaced = 0;
 
 let myOpponent;//Object storing opponent behaviour.AI
+let gameLog;
 
 const startGame = function(opts) {
   //Resets the board:
@@ -66,7 +67,7 @@ const startGame = function(opts) {
     numDest = opts.numDest;
     NUM_SHIPS = numCarrier + numBattle + numCruiser + numSub + numDest;
   }
-
+  gameLog = new GameLog(opts);
   clearBoard();
   clearLog();
 
@@ -86,11 +87,13 @@ const startGame = function(opts) {
   addShip("Submarine [3]", 3, numSub, "sub");
   addShip("Destroyer [2]", 2, numDest, "des");
 
+  gameLog.playerShips = playerShips.slice(0);
+  gameLog.opponentShips = opponentShips.slice(0);
 
   gameState = "setup";
 
   //Make a request to start the game
-  trackShips();
+  trackShips(playerShips, opponentShips);
 
   log(`Please click on the player board (left) on the space where you'd like to place your ${playerShips[playerShipsPlaced].desc} (${playerShips[playerShipsPlaced].size} spaces)...`);
   highlightPlayerBoard();
@@ -123,6 +126,7 @@ const okayPressed = function() {
 
       if (playerShipsPlaced === NUM_SHIPS) {
         $("#okButton").fadeTo(20, 0);
+
         isWaiting = true;//no actions until response is heard
 
         log(`Searching for opponent, please wait...`);
@@ -139,9 +143,18 @@ const okayPressed = function() {
           if (first === undefined) {
             first = Math.random() > 0.5;
           }
+          console.log(playerTiles);
+
+          gameLog.playerTiles = playerTiles;
+          gameLog.opponentTiles = opponentTiles;
+
           //Randomize who goes first
           if (!first) { //Server flips coin
+            gameLog.first = true;
             log("We flipped a coin and you lost :(. Your opponent is first.");
+            for (let i = 0; i < SHOTS_PER_TURN; i++) {
+              gameLog.p1log.push(null);
+            }
             isWaiting = true;
 
             highlightPlayerBoard();
@@ -153,6 +166,7 @@ const okayPressed = function() {
               highlightOpponentBoard();
             });
           } else {
+
             log("We flipped a coin, and you get to go first! Please pick a location");
             highlightOpponentBoard();
           }
@@ -222,7 +236,7 @@ const opponentTilePressed = function(a1) {
     }
 
     chosenTile.guessed = true;
-
+    gameLog.p1log.push(a1);
     if (chosenTile.state === "a") {
       log(`Player shoots at ${a1}: HIT`);
       chosenTile.state = 'd'; //Mark it as destroyed
@@ -277,6 +291,7 @@ const opponentTilePressed = function(a1) {
     } else {
       let numShotsLeft = SHOTS_PER_TURN - shotsSoFar;
       log(`You may take another shot, you have ${numShotsLeft} shot${numShotsLeft > 1 ? "s" : ""} left this turn.`);
+      isWaiting = false;
     }
   }
 
@@ -288,6 +303,7 @@ const task = function() {
     promisedTile = myOpponent.getMove();
     promisedTile.then((chosenTile) => {
       let a1 = chosenTile.a1();
+      gameLog.p2log.push(a1);
       chosenTile.guessed = true;
 
       if (chosenTile.state === "a") {
@@ -347,10 +363,10 @@ const checkOpponentMoves = function(numMoves) {
 
 }
 
-const trackShips = function() {
+const trackShips = function(playerShips, opponentShips) {
   //Prints out th the tracker area the active ships
   // $(`#playerTracker ul`).empty();
-  $(`ul`).empty();
+  $(`.tracker`).empty();
 
   for (let ship of playerShips) {
     //tmpText += "<ul>" + ship.desc;
